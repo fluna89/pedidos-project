@@ -90,6 +90,22 @@ export function AuthProvider({ children }) {
     return userData
   }
 
+  async function loginWithGoogle() {
+    // Mock: simula el flujo OAuth con Google
+    // En producción esto abriría el popup de Google y el backend validaría el token
+    await new Promise((r) => setTimeout(r, 800))
+
+    const userData = {
+      id: 'google-' + Date.now(),
+      name: 'Usuario Google',
+      email: 'usuario@gmail.com',
+      provider: 'google',
+      token: generateToken(),
+    }
+    persistUser(userData)
+    return userData
+  }
+
   async function recoverPassword(email) {
     await new Promise((r) => setTimeout(r, 500))
 
@@ -112,6 +128,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!user,
     isGuest: user?.isGuest || false,
     login,
+    loginWithGoogle,
     register,
     loginAsGuest,
     recoverPassword,

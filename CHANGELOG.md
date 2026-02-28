@@ -17,14 +17,27 @@ Registro de funcionalidades implementadas y planificadas.
 
 ---
 
+## [0.2.0] - 2026-02-28
+
+### Implementado
+
+- **Tailwind CSS v4** + **shadcn/ui** (Button, Input, Label, Card)
+- **React Router** con layout y navegación entre páginas
+- **Layout mobile first** con header responsive
+- **Login** con email y contraseña (mock)
+- **Registro** con validación de contraseñas (mock)
+- **Recuperación de contraseña** (mock)
+- **Modo invitado** con datos mínimos (nombre, teléfono, email opcional)
+- **Auth context** con persistencia en localStorage
+- **Alias `@/`** para imports absolutos
+
+---
+
 ## Roadmap (funcionalidades futuras)
 
-### v0.2.0 - Acceso y Registro
+### v0.2.1 - Login con Google
 
-- [ ] Modo invitado (pedido sin cuenta)
-- [ ] Registro con email y contraseña
-- [ ] Login con Google (OAuth)
-- [ ] Recuperación de contraseña
+- [x] Login con Google (OAuth mock)
 
 ### v0.3.0 - Gestión de Direcciones
 
