@@ -19,37 +19,48 @@ Registro de funcionalidades implementadas y planificadas.
 
 ## Roadmap (funcionalidades futuras)
 
-### v0.2.0 - Menú y navegación
+### v0.2.0 - Acceso y Registro
+- [ ] Modo invitado (pedido sin cuenta)
+- [ ] Registro con email y contraseña
+- [ ] Login con Google (OAuth)
+- [ ] Recuperación de contraseña
 
-- [ ] Listado de productos del menú
-- [ ] Filtrado por categoría
-- [ ] React Router para navegación entre páginas
-- [ ] Página de detalle de producto
+### v0.3.0 - Gestión de Direcciones
+- [ ] CRUD de direcciones de entrega
+- [ ] Alias, comentarios y dirección activa
+- [ ] Validación de cobertura
 
-### v0.3.0 - Carrito de compras
+### v0.4.0 - Catálogo y Armado del Pedido
+- [ ] Listado de productos con formatos
+- [ ] Selección de sabores con límite por formato
+- [ ] Adicionales con costo extra
+- [ ] Comentarios por producto y por pedido
 
-- [ ] Context de carrito (agregar, quitar, modificar cantidad)
-- [ ] Vista del carrito
-- [ ] Resumen de pedido con total
+### v0.5.0 - Costos de Delivery
+- [ ] Cálculo de costo de envío por distancia
+- [ ] Visualización del costo antes de confirmar
+- [ ] Bloqueo si dirección fuera de cobertura
 
-### v0.4.0 - Flujo de pedido
+### v0.6.0 - Programa de Fidelización (Puntos)
+- [ ] Acumulación y visualización de puntos
+- [ ] Canje de puntos como descuento
+- [ ] Códigos de descuento / cupones
 
-- [ ] Formulario de datos del cliente
-- [ ] Selección de tipo de entrega (delivery / retiro)
-- [ ] Confirmación de pedido
-- [ ] Pantalla de estado del pedido
+### v0.7.0 - Medios de Pago
+- [ ] Mercado Pago (API oficial)
+- [ ] Transferencia bancaria
+- [ ] Tarjeta crédito/débito
+- [ ] Efectivo al delivery
 
-### v0.5.0 - Mejoras de UX
-
-- [ ] Loading states y manejo de errores
-- [ ] Diseño responsive
-- [ ] Animaciones y transiciones
+### v0.8.0 - Panel del Usuario
+- [ ] Estado en tiempo real del pedido activo
+- [ ] Historial de pedidos
+- [ ] Saldo de puntos y vencimiento
+- [ ] Gestión de direcciones y datos de cuenta
 
 ### Futuro
-
 - [ ] Integración con backend real (Python)
-- [ ] Autenticación de usuarios
-- [ ] Historial de pedidos
 - [ ] Notificaciones en tiempo real
 - [ ] Testing (Vitest + React Testing Library)
 - [ ] CI/CD pipeline (GitHub Actions)
+- [ ] Diseño responsive y mejoras de UX
