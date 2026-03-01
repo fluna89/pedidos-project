@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,6 +16,8 @@ import {
 export default function RegisterPage() {
   const { register } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = location.state?.from || '/'
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -41,7 +43,7 @@ export default function RegisterPage() {
 
     try {
       await register(name, email, password)
-      navigate('/')
+      navigate(returnTo)
     } catch (err) {
       setError(err.message)
     } finally {

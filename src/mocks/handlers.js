@@ -17,12 +17,14 @@ function delay(ms = MOCK_DELAY) {
 
 export async function getMenu() {
   await delay()
-  return [...mockMenu]
+  return mockMenu.filter((item) => item.available).map((item) => ({ ...item }))
 }
 
 export async function getMenuByCategory(categoryId) {
   await delay()
-  return mockMenu.filter((item) => item.category === categoryId)
+  return mockMenu
+    .filter((item) => item.category === categoryId && item.available)
+    .map((item) => ({ ...item }))
 }
 
 export async function getCategories() {

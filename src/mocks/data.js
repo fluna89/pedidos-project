@@ -1,68 +1,108 @@
 // Mock data - simulates backend responses
 // Replace with real API calls when backend is ready
 
+// ── Catálogo ───────────────────────────────────────────
+
+export const mockCategories = [
+  { id: 'hamburguesas', name: 'Hamburguesas', icon: '🍔' },
+  { id: 'pizzas', name: 'Pizzas', icon: '🍕' },
+  { id: 'acompañamientos', name: 'Acompañamientos', icon: '🍟' },
+  { id: 'bebidas', name: 'Bebidas', icon: '🥤' },
+]
+
 export const mockMenu = [
   {
     id: 1,
     name: 'Hamburguesa Clásica',
     description: 'Carne, lechuga, tomate, queso cheddar',
-    price: 2500,
     category: 'hamburguesas',
     image: null,
     available: true,
+    formats: [
+      { id: 'f1-simple', name: 'Simple', price: 2500 },
+      { id: 'f1-doble', name: 'Doble carne', price: 3500 },
+    ],
+    extras: [
+      { id: 'x-bacon', name: 'Bacon', price: 400 },
+      { id: 'x-egg', name: 'Huevo', price: 300 },
+      { id: 'x-cheddar', name: 'Extra cheddar', price: 250 },
+    ],
   },
   {
     id: 2,
-    name: 'Hamburguesa Doble',
-    description: 'Doble carne, doble queso, cebolla caramelizada',
-    price: 3500,
+    name: 'Hamburguesa Veggie',
+    description: 'Medallón de lentejas, rúcula, tomate seco',
     category: 'hamburguesas',
     image: null,
     available: true,
+    formats: [
+      { id: 'f2-simple', name: 'Simple', price: 2600 },
+      { id: 'f2-doble', name: 'Doble medallón', price: 3600 },
+    ],
+    extras: [
+      { id: 'x-guac', name: 'Guacamole', price: 400 },
+      { id: 'x-cheddar', name: 'Extra cheddar', price: 250 },
+    ],
   },
   {
     id: 3,
     name: 'Pizza Muzzarella',
     description: 'Salsa de tomate, muzzarella, orégano',
-    price: 3000,
     category: 'pizzas',
     image: null,
     available: true,
+    formats: [
+      { id: 'f3-chica', name: 'Chica (4 porc.)', price: 2500 },
+      { id: 'f3-grande', name: 'Grande (8 porc.)', price: 4200 },
+    ],
+    extras: [],
   },
   {
     id: 4,
     name: 'Pizza Napolitana',
     description: 'Salsa de tomate, muzzarella, tomate, ajo',
-    price: 3200,
     category: 'pizzas',
     image: null,
     available: false,
+    formats: [
+      { id: 'f4-chica', name: 'Chica (4 porc.)', price: 2700 },
+      { id: 'f4-grande', name: 'Grande (8 porc.)', price: 4500 },
+    ],
+    extras: [],
   },
   {
     id: 5,
     name: 'Papas Fritas',
     description: 'Porción grande con salsa a elección',
-    price: 1500,
     category: 'acompañamientos',
     image: null,
     available: true,
+    formats: [{ id: 'f5-porcion', name: 'Porción', price: 1500 }],
+    extras: [
+      { id: 'x-cheddar-pp', name: 'Cheddar', price: 350 },
+      { id: 'x-bacon-pp', name: 'Bacon', price: 400 },
+    ],
   },
   {
     id: 6,
     name: 'Gaseosa 500ml',
     description: 'Coca-Cola, Sprite o Fanta',
-    price: 800,
     category: 'bebidas',
     image: null,
     available: true,
+    formats: [{ id: 'f6-500', name: '500ml', price: 800 }],
+    extras: [],
   },
-]
-
-export const mockCategories = [
-  { id: 'hamburguesas', name: 'Hamburguesas' },
-  { id: 'pizzas', name: 'Pizzas' },
-  { id: 'acompañamientos', name: 'Acompañamientos' },
-  { id: 'bebidas', name: 'Bebidas' },
+  {
+    id: 7,
+    name: 'Agua mineral',
+    description: 'Con o sin gas',
+    category: 'bebidas',
+    image: null,
+    available: true,
+    formats: [{ id: 'f7-500', name: '500ml', price: 600 }],
+    extras: [],
+  },
 ]
 
 export const mockOrderStatuses = [

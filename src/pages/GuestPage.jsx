@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,6 +16,8 @@ import {
 export default function GuestPage() {
   const { loginAsGuest } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = location.state?.from || '/'
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -29,7 +31,7 @@ export default function GuestPage() {
 
     try {
       await loginAsGuest({ name, phone, email })
-      navigate('/')
+      navigate(returnTo)
     } catch (err) {
       setError(err.message)
     } finally {

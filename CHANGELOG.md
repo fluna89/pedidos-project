@@ -73,14 +73,25 @@ Registro de funcionalidades implementadas y planificadas.
 
 ---
 
+## [0.4.0] - 2026-03-01
+
+### Implementado
+
+- **Catálogo de productos** con grilla responsive y filtro por categoría (tabs con íconos)
+- **Detalle de producto** con selección de formato (tamaño), extras opcionales con costo, comentario libre
+- **Carrito de compras** con agregar, eliminar, modificar cantidad, comentario general del pedido
+- **CartContext** con estado global: items, itemCount, subtotal, clearCart
+- **Checkout con login gate**: usuarios no autenticados ven opciones de ingreso; al autenticarse se redirigen de vuelta al checkout
+- **Ícono de carrito en header** con badge de cantidad de items, visible para todos
+- **Link "Menú" en header** accesible para visitantes y logueados
+- **HomePage** actualizada con CTA "Ver menú"
+- **Datos mock enriquecidos**: productos con array de formatos (nombre, precio) y extras (nombre, precio)
+- **GuestRoute mejorado**: preserva `location.state` al redirigir (soporte para flujo checkout → login → checkout)
+- **Redirección post-auth**: LoginPage, RegisterPage y GuestPage respetan `state.from` para volver a la ruta de origen
+
+---
+
 ## Roadmap (funcionalidades futuras)
-
-### v0.4.0 - Catálogo y Armado del Pedido
-
-- [ ] Listado de productos con formatos
-- [ ] Selección de sabores con límite por formato
-- [ ] Adicionales con costo extra
-- [ ] Comentarios por producto y por pedido
 
 ### v0.5.0 - Costos de Delivery
 

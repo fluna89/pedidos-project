@@ -1,0 +1,74 @@
+import { useState, useCallback } from 'react'
+import { CartContext } from '@/context/cart-context'
+
+/**
+ * Cart item shape:
+ * {
+ *   cartId:    string,       // unique per cart line
+ *   productId: number,
+ *   name:      string,
+ *   format:    { id, name, price },
+ *   extras:    [{ id, name, price }],
+ *   comment:   string,
+ *   quantity:  number,
+ *   unitPrice: number,       // format.price + sum(extras.price)
+ * }
+ */
+
+function calcUnitPrice(format, extras) {
+  return format.price + extras.reduce((sum, e) => sum + e.price, 0)
+}
+
+export function CartProvider({ children }) {
+  const [items, setItems] = useState([])
+  const [orderComment, setOrderComment] = useState('')
+
+  const addItem = useCallback((product, format, extras = [], comment = '') => {
+    const unitPrice = calcUnitPrice(format, extras)
+    const newItem = {
+      cartId: 'cart-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+      productId: product.id,
+      name: product.name,
+      format: { id: format.id, name: format.name, price: format.price },
+      extras: extras.map((e) => ({ id: e.id, name: e.name, price: e.price })),
+      comment,
+      quantity: 1,
+      unitPrice,
+    }
+    setItems((prev) => [...prev, newItem])
+    return newItem
+  }, [])
+
+  const removeItem = useCallback((cartId) => {
+    setItems((prev) => prev.filter((i) => i.cartId !== cartId))
+  }, [])
+
+  const updateQuantity = useCallback((cartId, quantity) => {
+    if (quantity < 1) return
+    setItems((prev) =>
+      prev.map((i) => (i.cartId === cartId ? { ...i, quantity } : i)),
+    )
+  }, [])
+
+  const clearCart = useCallback(() => {
+    setItems([])
+    setOrderComment('')
+  }, [])
+
+  const itemCount = items.reduce((sum, i) => sum + i.quantity, 0)
+  const subtotal = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0)
+
+  const value = {
+    items,
+    orderComment,
+    setOrderComment,
+    addItem,
+    removeItem,
+    updateQuantity,
+    clearCart,
+    itemCount,
+    subtotal,
+  }
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
+}

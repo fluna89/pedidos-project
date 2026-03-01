@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useTheme } from '@/hooks/useTheme'
+import { useCart } from '@/hooks/useCart'
 import { Button } from '@/components/ui/button'
-import { LogOut, MapPin, Moon, Sun, User } from 'lucide-react'
+import { LogOut, MapPin, Moon, ShoppingCart, Sun, UtensilsCrossed, User } from 'lucide-react'
 
 export default function Header() {
   const { user, isAuthenticated, isGuest, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
+  const { itemCount } = useCart()
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
@@ -16,6 +18,13 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-2">
+          <Link to="/menu">
+            <Button variant="ghost" size="sm">
+              <UtensilsCrossed className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Menú</span>
+            </Button>
+          </Link>
+
           {isAuthenticated && !isGuest && (
             <Link to="/addresses">
               <Button variant="ghost" size="sm">
@@ -24,6 +33,17 @@ export default function Header() {
               </Button>
             </Link>
           )}
+
+          <Link to="/cart" className="relative">
+            <Button variant="ghost" size="icon" aria-label="Carrito">
+              <ShoppingCart className="h-4 w-4" />
+            </Button>
+            {itemCount > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                {itemCount > 99 ? '99+' : itemCount}
+              </span>
+            )}
+          </Link>
 
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Cambiar tema">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}

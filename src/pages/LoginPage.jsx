@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,6 +16,8 @@ import {
 export default function LoginPage() {
   const { login, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = location.state?.from || '/'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -28,7 +30,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password)
-      navigate('/')
+      navigate(returnTo)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -95,7 +97,7 @@ export default function LoginPage() {
                 setLoading(true)
                 try {
                   await loginWithGoogle()
-                  navigate('/')
+                  navigate(returnTo)
                 } catch (err) {
                   setError(err.message)
                 } finally {
@@ -127,13 +129,14 @@ export default function LoginPage() {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={() => navigate('/guest')}
+              onClick={() => navigate('/guest', { state: { from: returnTo } })}
             >
               Continuar como invitado
             </Button>
             <div className="flex w-full justify-between text-sm">
               <Link
                 to="/register"
+                state={{ from: returnTo }}
                 className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
               >
                 Crear cuenta
