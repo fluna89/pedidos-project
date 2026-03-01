@@ -97,6 +97,7 @@ Registro de funcionalidades implementadas y planificadas.
 
 - **Catálogo de heladería**: datos mock adaptados con 16 sabores, helados por kilo/cucurucho/vasito, postres, tortas heladas, milkshakes y bebidas
 - **Selección de sabores por formato**: cada formato define `maxFlavors`, el usuario elige sabores con límite visual
+- **Sabores flexibles**: se permite elegir entre 1 y `maxFlavors` sabores (no obliga a completar el máximo)
 - **Sabores en carrito y checkout**: se muestran los sabores elegidos en cada línea del pedido
 - **Chips de sabores**: layout tipo chip (`flex-wrap`, `rounded-full`) que se adapta al ancho sin truncar nombres largos
 - **Branding**: nombre del local "Ainara Helados" en header y homepage
