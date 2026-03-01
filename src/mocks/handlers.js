@@ -4,6 +4,7 @@
 import {
   mockMenu,
   mockCategories,
+  mockFlavors,
   mockAddresses,
   mockStoreLocation,
   mockMaxDeliveryKm,
@@ -30,6 +31,11 @@ export async function getMenuByCategory(categoryId) {
 export async function getCategories() {
   await delay()
   return [...mockCategories]
+}
+
+export async function getFlavors() {
+  await delay()
+  return [...mockFlavors]
 }
 
 export async function getMenuItem(id) {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getMenuItem } from '@/mocks/handlers'
+import { getMenuItem, getFlavors } from '@/mocks/handlers'
 import { useCart } from '@/hooks/useCart'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -22,8 +22,10 @@ export default function ProductDetailPage() {
   const { addItem } = useCart()
 
   const [product, setProduct] = useState(null)
+  const [allFlavors, setAllFlavors] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedFormat, setSelectedFormat] = useState(null)
+  const [selectedFlavors, setSelectedFlavors] = useState([])
   const [selectedExtras, setSelectedExtras] = useState([])
   const [comment, setComment] = useState('')
   const [added, setAdded] = useState(false)
@@ -32,9 +34,13 @@ export default function ProductDetailPage() {
     let cancelled = false
     async function load() {
       try {
-        const data = await getMenuItem(Number(id))
+        const [data, flavors] = await Promise.all([
+          getMenuItem(Number(id)),
+          getFlavors(),
+        ])
         if (!cancelled) {
           setProduct(data)
+          setAllFlavors(flavors)
           if (data.formats.length === 1) {
             setSelectedFormat(data.formats[0])
           }
@@ -51,6 +57,25 @@ export default function ProductDetailPage() {
     }
   }, [id, navigate])
 
+  const maxFlavors = selectedFormat?.maxFlavors ?? 0
+
+  // Reset flavors when format changes and new limit is smaller
+  function handleFormatSelect(fmt) {
+    setSelectedFormat(fmt)
+    setSelectedFlavors((prev) =>
+      prev.length > fmt.maxFlavors ? prev.slice(0, fmt.maxFlavors) : prev,
+    )
+  }
+
+  function toggleFlavor(flavor) {
+    setSelectedFlavors((prev) => {
+      const exists = prev.some((f) => f.id === flavor.id)
+      if (exists) return prev.filter((f) => f.id !== flavor.id)
+      if (prev.length >= maxFlavors) return prev // at limit
+      return [...prev, flavor]
+    })
+  }
+
   function toggleExtra(extra) {
     setSelectedExtras((prev) =>
       prev.some((e) => e.id === extra.id)
@@ -59,9 +84,12 @@ export default function ProductDetailPage() {
     )
   }
 
+  const flavorsComplete =
+    !product?.hasFlavors || (maxFlavors > 0 && selectedFlavors.length === maxFlavors)
+
   function handleAddToCart() {
-    if (!selectedFormat) return
-    addItem(product, selectedFormat, selectedExtras, comment)
+    if (!selectedFormat || !flavorsComplete) return
+    addItem(product, selectedFormat, selectedExtras, comment, selectedFlavors)
     setAdded(true)
     setTimeout(() => navigate('/menu'), 800)
   }
@@ -116,9 +144,16 @@ export default function ProductDetailPage() {
                       ? 'border-gray-900 bg-gray-900 text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900'
                       : 'border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500',
                   )}
-                  onClick={() => setSelectedFormat(fmt)}
+                  onClick={() => handleFormatSelect(fmt)}
                 >
-                  <span>{fmt.name}</span>
+                  <span>
+                    {fmt.name}
+                    {fmt.maxFlavors && (
+                      <span className="ml-2 text-xs opacity-70">
+                        ({fmt.maxFlavors} {fmt.maxFlavors === 1 ? 'sabor' : 'sabores'})
+                      </span>
+                    )}
+                  </span>
                   <span className="font-medium">
                     ${fmt.price.toLocaleString('es-AR')}
                   </span>
@@ -126,6 +161,49 @@ export default function ProductDetailPage() {
               ))}
             </div>
           </div>
+
+          {/* Flavor selection */}
+          {product.hasFlavors && selectedFormat && (
+            <div className="space-y-2">
+              <Label>
+                Sabores{' '}
+                <span className="text-gray-400 dark:text-gray-500">
+                  ({selectedFlavors.length}/{maxFlavors})
+                </span>
+              </Label>
+              <div className="grid grid-cols-2 gap-2">
+                {allFlavors.map((flavor) => {
+                  const selected = selectedFlavors.some(
+                    (f) => f.id === flavor.id,
+                  )
+                  const atLimit =
+                    selectedFlavors.length >= maxFlavors && !selected
+
+                  return (
+                    <button
+                      key={flavor.id}
+                      type="button"
+                      disabled={atLimit}
+                      className={cn(
+                        'flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors',
+                        selected
+                          ? 'border-gray-900 bg-gray-50 dark:border-gray-100 dark:bg-gray-800'
+                          : atLimit
+                            ? 'cursor-not-allowed border-gray-100 text-gray-300 dark:border-gray-800 dark:text-gray-600'
+                            : 'border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500',
+                      )}
+                      onClick={() => toggleFlavor(flavor)}
+                    >
+                      {selected && (
+                        <Check className="h-3.5 w-3.5 shrink-0 text-green-600 dark:text-green-400" />
+                      )}
+                      <span className="truncate">{flavor.name}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Extras */}
           {product.extras.length > 0 && (
@@ -179,7 +257,7 @@ export default function ProductDetailPage() {
             </Label>
             <Textarea
               id="item-comment"
-              placeholder="Ej: sin cebolla, bien cocida..."
+              placeholder="Ej: sin topping, envuelto para regalo..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={2}
@@ -190,7 +268,7 @@ export default function ProductDetailPage() {
         <CardFooter>
           <Button
             className="w-full"
-            disabled={!selectedFormat || added}
+            disabled={!selectedFormat || !flavorsComplete || added}
             onClick={handleAddToCart}
           >
             {added ? (

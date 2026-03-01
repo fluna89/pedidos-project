@@ -93,7 +93,10 @@ export default function CheckoutPage() {
               <span>
                 {item.quantity}x {item.name}{' '}
                 <span className="text-gray-500 dark:text-gray-400">
-                  ({item.format.name})
+                  ({item.format.name}
+                  {item.flavors.length > 0 &&
+                    ' · ' + item.flavors.map((f) => f.name).join(', ')}
+                  )
                 </span>
               </span>
               <span className="font-medium">

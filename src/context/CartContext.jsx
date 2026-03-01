@@ -8,6 +8,7 @@ import { CartContext } from '@/context/cart-context'
  *   productId: number,
  *   name:      string,
  *   format:    { id, name, price },
+ *   flavors:   [{ id, name }],
  *   extras:    [{ id, name, price }],
  *   comment:   string,
  *   quantity:  number,
@@ -23,13 +24,14 @@ export function CartProvider({ children }) {
   const [items, setItems] = useState([])
   const [orderComment, setOrderComment] = useState('')
 
-  const addItem = useCallback((product, format, extras = [], comment = '') => {
+  const addItem = useCallback((product, format, extras = [], comment = '', flavors = []) => {
     const unitPrice = calcUnitPrice(format, extras)
     const newItem = {
       cartId: 'cart-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
       productId: product.id,
       name: product.name,
       format: { id: format.id, name: format.name, price: format.price },
+      flavors: flavors.map((f) => ({ id: f.id, name: f.name })),
       extras: extras.map((e) => ({ id: e.id, name: e.name, price: e.price })),
       comment,
       quantity: 1,
