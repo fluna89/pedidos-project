@@ -33,6 +33,23 @@ Registro de funcionalidades implementadas y planificadas.
 
 ---
 
+## [0.3.0] - 2026-03-01
+
+### Implementado
+
+- **CRUD de direcciones** con agregar, editar y eliminar
+- **Alias y comentarios** por dirección (ej: 'Casa', 'Piso 3 timbre B')
+- **Dirección activa** seleccionable para el pedido, persistida en localStorage
+- **Validación de cobertura** con fórmula Haversine (zona de 5 km)
+- **Indicador visual** de cobertura en cada dirección (verde/rojo + alerta)
+- **Ruta protegida** `/addresses` solo para usuarios registrados (no guests)
+- **Link en header** con ícono de mapa, visible para usuarios logueados
+- **AddressContext** con estado global de direcciones y dirección activa
+- **Componente Textarea** UI reutilizable con dark mode
+- **ProtectedRoute** para restringir acceso a rutas autenticadas
+
+---
+
 ## Roadmap (funcionalidades futuras)
 
 ### v0.2.1 - Login con Google + Modo oscuro
@@ -42,9 +59,9 @@ Registro de funcionalidades implementadas y planificadas.
 
 ### v0.3.0 - Gestión de Direcciones
 
-- [ ] CRUD de direcciones de entrega
-- [ ] Alias, comentarios y dirección activa
-- [ ] Validación de cobertura
+- [x] CRUD de direcciones de entrega
+- [x] Alias, comentarios y dirección activa
+- [x] Validación de cobertura
 
 ### v0.4.0 - Catálogo y Armado del Pedido
 

@@ -73,3 +73,40 @@ export const mockOrderStatuses = [
   'en_camino',
   'entregado',
 ]
+
+// Coverage zone — addresses within 5 km of the store are covered
+export const mockStoreLocation = { lat: -34.6037, lng: -58.3816 } // CABA centro
+export const mockMaxDeliveryKm = 5
+
+export const mockAddresses = [
+  {
+    id: 'addr-1',
+    alias: 'Casa',
+    street: 'Av. Corrientes 1234',
+    city: 'CABA',
+    comment: 'Piso 3, timbre B',
+    lat: -34.6045,
+    lng: -58.3923,
+    inCoverage: true,
+  },
+  {
+    id: 'addr-2',
+    alias: 'Trabajo',
+    street: 'Maipú 456',
+    city: 'CABA',
+    comment: 'Oficina 12',
+    lat: -34.5997,
+    lng: -58.3751,
+    inCoverage: true,
+  },
+  {
+    id: 'addr-3',
+    alias: 'Casa de mamá',
+    street: 'Av. San Martín 8900',
+    city: 'Pilar',
+    comment: 'Portón verde',
+    lat: -34.4588,
+    lng: -58.9142,
+    inCoverage: false,
+  },
+]

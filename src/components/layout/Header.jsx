@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useTheme } from '@/hooks/useTheme'
 import { Button } from '@/components/ui/button'
-import { LogOut, Moon, Sun, User } from 'lucide-react'
+import { LogOut, MapPin, Moon, Sun, User } from 'lucide-react'
 
 export default function Header() {
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, isGuest, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
 
   return (
@@ -16,6 +16,15 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-2">
+          {isAuthenticated && !isGuest && (
+            <Link to="/addresses">
+              <Button variant="ghost" size="sm">
+                <MapPin className="mr-1 h-4 w-4" />
+                <span className="hidden sm:inline">Direcciones</span>
+              </Button>
+            </Link>
+          )}
+
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Cambiar tema">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
