@@ -121,6 +121,14 @@ Registro de funcionalidades implementadas y planificadas.
 
 ---
 
+## [0.5.1] - 2026-03-01
+
+### Implementado
+
+- **Opción de login para invitados en checkout**: los usuarios guest ven botones "Iniciar sesión" y "Crear cuenta" en el resumen del pedido, con redirect de vuelta al checkout
+
+---
+
 ## Roadmap (funcionalidades futuras)
 
 ### v0.6.0 - Programa de Fidelización (Puntos)

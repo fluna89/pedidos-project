@@ -373,6 +373,26 @@ export default function CheckoutPage() {
           >
             Confirmar y pagar (próximamente)
           </Button>
+          {isGuest && (
+            <div className="w-full rounded-md border border-gray-200 px-4 py-3 text-center dark:border-gray-700">
+              <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                ¿Querés guardar tu pedido y acumular puntos?
+              </p>
+              <div className="flex gap-2">
+                <Link to="/login" state={{ from: '/checkout' }} className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <LogIn className="mr-1 h-3.5 w-3.5" />
+                    Iniciar sesión
+                  </Button>
+                </Link>
+                <Link to="/register" state={{ from: '/checkout' }} className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    Crear cuenta
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
           <Button
             variant="ghost"
             size="sm"
