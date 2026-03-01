@@ -48,12 +48,12 @@ export default function RecoverPage() {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             {error && (
-              <p className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+              <p className="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/30 dark:text-red-400">
                 {error}
               </p>
             )}
             {success && (
-              <p className="rounded-md bg-green-50 p-3 text-sm text-green-600">
+              <p className="rounded-md bg-green-50 p-3 text-sm text-green-600 dark:bg-green-900/30 dark:text-green-400">
                 {success}
               </p>
             )}
@@ -75,7 +75,7 @@ export default function RecoverPage() {
             </Button>
             <Link
               to="/login"
-              className="text-center text-sm text-gray-600 hover:text-gray-900"
+              className="text-center text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
             >
               Volver al login
             </Link>

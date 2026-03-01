@@ -1,22 +1,28 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { useTheme } from '@/hooks/useTheme'
 import { Button } from '@/components/ui/button'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, Moon, Sun, User } from 'lucide-react'
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
+    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <Link to="/" className="text-lg font-bold text-gray-900">
+        <Link to="/" className="text-lg font-bold text-gray-900 dark:text-gray-100">
           🍔 Pedidos
         </Link>
 
         <nav className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Cambiar tema">
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+
           {isAuthenticated ? (
             <>
-              <span className="hidden text-sm text-gray-600 sm:inline">
+              <span className="hidden text-sm text-gray-600 dark:text-gray-400 sm:inline">
                 {user.isGuest ? 'Invitado' : user.name}
               </span>
               <Button variant="ghost" size="icon" onClick={logout}>

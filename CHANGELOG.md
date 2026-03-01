@@ -35,9 +35,10 @@ Registro de funcionalidades implementadas y planificadas.
 
 ## Roadmap (funcionalidades futuras)
 
-### v0.2.1 - Login con Google
+### v0.2.1 - Login con Google + Modo oscuro
 
 - [x] Login con Google (OAuth mock)
+- [x] Modo oscuro con toggle (persistido en localStorage)
 
 ### v0.3.0 - Gestión de Direcciones
 

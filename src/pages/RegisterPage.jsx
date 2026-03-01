@@ -59,7 +59,7 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             {error && (
-              <p className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+              <p className="rounded-md bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/30 dark:text-red-400">
                 {error}
               </p>
             )}
@@ -112,9 +112,9 @@ export default function RegisterPage() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Creando cuenta...' : 'Crear cuenta'}
             </Button>
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
               ¿Ya tenés cuenta?{' '}
-              <Link to="/login" className="font-medium hover:text-gray-900">
+              <Link to="/login" className="font-medium hover:text-gray-900 dark:hover:text-gray-100">
                 Iniciá sesión
               </Link>
             </p>
