@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
 import AppLayout from '@/components/layout/AppLayout'
+import GuestRoute from '@/components/auth/GuestRoute'
 import HomePage from '@/pages/HomePage'
 import LoginPage from '@/pages/LoginPage'
 import RegisterPage from '@/pages/RegisterPage'
@@ -16,10 +17,10 @@ function App() {
           <Routes>
             <Route element={<AppLayout />}>
               <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/recover" element={<RecoverPage />} />
-              <Route path="/guest" element={<GuestPage />} />
+              <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+              <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+              <Route path="/recover" element={<GuestRoute><RecoverPage /></GuestRoute>} />
+              <Route path="/guest" element={<GuestRoute><GuestPage /></GuestRoute>} />
             </Route>
           </Routes>
         </BrowserRouter>
