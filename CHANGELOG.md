@@ -2,6 +2,25 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.6.0] - 2026-03-01
+
+### Implementado
+
+- **Programa de Fidelización** — sistema de puntos para usuarios registrados
+- **Acumulación de puntos**: 1 peso = 1 punto (excluye costo de envío)
+- **Vencimiento**: puntos expiran a los 3 meses desde la acreditación
+- **Canje de puntos** como descuento en el checkout (1 punto = $1)
+- **Cupones de descuento** con validación automática (porcentaje o monto fijo)
+- **CouponInput**: ingreso y validación de códigos de descuento con feedback de error
+- **RedeemPoints**: selector de puntos a canjear con botón "Usar máximo"
+- **PointsBadge**: indicador de saldo de puntos en el header (estrella dorada)
+- **LoyaltyContext**: contexto global con saldo, historial, canje y acumulación
+- **Mock data**: historial de puntos, 4 cupones de prueba (HELADOGRATIS, VERANO20, AINARA10, EXPIRADO)
+- **Desglose en checkout**: subtotal − puntos − cupón + envío = total
+- Descuentos solo para usuarios registrados (invitados ven cupones pero no puntos)
+
+---
+
 ## [0.1.0] - 2026-02-28
 
 ### Implementado
@@ -131,11 +150,11 @@ Registro de funcionalidades implementadas y planificadas.
 
 ## Roadmap (funcionalidades futuras)
 
-### v0.6.0 - Programa de Fidelización (Puntos)
+### v0.6.0 - Programa de Fidelización (Puntos) ✅
 
-- [ ] Acumulación y visualización de puntos
-- [ ] Canje de puntos como descuento
-- [ ] Códigos de descuento / cupones
+- [x] Acumulación y visualización de puntos
+- [x] Canje de puntos como descuento
+- [x] Códigos de descuento / cupones
 
 ### v0.7.0 - Medios de Pago
 

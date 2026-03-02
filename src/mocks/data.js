@@ -250,6 +250,105 @@ export const mockDeliveryZones = [
   { id: 'zone-3', name: 'Lejana', maxKm: 5, cost: 1200 },
 ]
 
+// ── Programa de Fidelización ───────────────────────────
+
+/**
+ * Points history for mock user (id: 1 — Juan Pérez).
+ * type: 'earn' | 'redeem' | 'expire'
+ * Each earn row accrues 1 point per peso (excl. shipping).
+ * Points expire 3 months after accrual.
+ */
+export const mockPointsHistory = [
+  {
+    id: 'pts-1',
+    userId: 1,
+    type: 'earn',
+    points: 9000,
+    description: 'Pedido #1001 — Helado por kilo 1kg',
+    date: '2025-12-15T14:30:00Z',
+    expiresAt: '2026-03-15T14:30:00Z',
+  },
+  {
+    id: 'pts-2',
+    userId: 1,
+    type: 'earn',
+    points: 4300,
+    description: 'Pedido #1002 — Sundae + Milkshake',
+    date: '2026-01-22T10:00:00Z',
+    expiresAt: '2026-04-22T10:00:00Z',
+  },
+  {
+    id: 'pts-3',
+    userId: 1,
+    type: 'redeem',
+    points: -2000,
+    description: 'Canje en pedido #1003',
+    date: '2026-02-05T18:00:00Z',
+    expiresAt: null,
+  },
+  {
+    id: 'pts-4',
+    userId: 1,
+    type: 'earn',
+    points: 5500,
+    description: 'Pedido #1003 — Helado 1/2 kg',
+    date: '2026-02-05T18:00:00Z',
+    expiresAt: '2026-05-05T18:00:00Z',
+  },
+]
+
+/**
+ * Mock discount coupons.
+ * type: 'percentage' | 'fixed'
+ * minOrder: minimum subtotal to apply the coupon.
+ */
+export const mockCoupons = [
+  {
+    id: 'cup-1',
+    code: 'HELADOGRATIS',
+    type: 'fixed',
+    value: 3500,
+    description: '$3.500 de descuento',
+    minOrder: 5000,
+    expiresAt: '2026-06-30T23:59:59Z',
+    active: true,
+  },
+  {
+    id: 'cup-2',
+    code: 'VERANO20',
+    type: 'percentage',
+    value: 20,
+    description: '20% de descuento',
+    minOrder: 3000,
+    maxDiscount: 5000,
+    expiresAt: '2026-04-01T23:59:59Z',
+    active: true,
+  },
+  {
+    id: 'cup-3',
+    code: 'AINARA10',
+    type: 'percentage',
+    value: 10,
+    description: '10% de descuento',
+    minOrder: 0,
+    maxDiscount: 2000,
+    expiresAt: '2026-12-31T23:59:59Z',
+    active: true,
+  },
+  {
+    id: 'cup-4',
+    code: 'EXPIRADO',
+    type: 'fixed',
+    value: 1000,
+    description: '$1.000 de descuento',
+    minOrder: 0,
+    expiresAt: '2025-06-01T23:59:59Z',
+    active: false,
+  },
+]
+
+// ── Direcciones ────────────────────────────────────────
+
 export const mockAddresses = [
   {
     id: 'addr-1',

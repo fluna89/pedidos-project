@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useCart } from '@/hooks/useCart'
 import { useAddresses } from '@/hooks/useAddresses'
+import { useLoyalty } from '@/hooks/useLoyalty'
 import { calcDeliveryCost } from '@/mocks/handlers'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,15 +27,22 @@ import {
   AlertTriangle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import CouponInput from '@/components/loyalty/CouponInput'
+import RedeemPoints from '@/components/loyalty/RedeemPoints'
 
 export default function CheckoutPage() {
   const { isAuthenticated, isGuest } = useAuth()
   const { items, subtotal } = useCart()
   const { addresses, activeId, selectActive, activeAddress } = useAddresses()
+  const { eligible: loyaltyEligible } = useLoyalty()
   const navigate = useNavigate()
 
   const [orderType, setOrderType] = useState('delivery') // 'delivery' | 'pickup'
   const [deliveryResult, setDeliveryResult] = useState(null)
+
+  // Loyalty state
+  const [pointsToRedeem, setPointsToRedeem] = useState(0)
+  const [appliedCoupon, setAppliedCoupon] = useState(null) // { coupon, discount }
 
   // Guest address fields
   const [guestAddress, setGuestAddress] = useState({
@@ -89,7 +97,9 @@ export default function CheckoutPage() {
 
   const deliveryCost =
     showDeliveryInfo && deliveryInfo?.inCoverage ? deliveryInfo.cost : 0
-  const total = subtotal + deliveryCost
+  const couponDiscount = appliedCoupon?.discount ?? 0
+  const totalDiscount = pointsToRedeem + couponDiscount
+  const total = Math.max(0, subtotal - totalDiscount) + deliveryCost
   const outOfCoverage =
     orderType === 'delivery' && deliveryInfo && !deliveryInfo.inCoverage
   const noAddress =
@@ -323,6 +333,24 @@ export default function CheckoutPage() {
         </div>
       )}
 
+      {/* Loyalty — Points & Coupons */}
+      <div className="space-y-3">
+        <Label>Descuentos</Label>
+        {loyaltyEligible && (
+          <RedeemPoints
+            subtotal={subtotal}
+            pointsToRedeem={pointsToRedeem}
+            onChangePoints={setPointsToRedeem}
+          />
+        )}
+        <CouponInput
+          subtotal={subtotal}
+          appliedCoupon={appliedCoupon}
+          onApply={(result) => setAppliedCoupon(result)}
+          onRemove={() => setAppliedCoupon(null)}
+        />
+      </div>
+
       {/* Order summary */}
       <Card>
         <CardHeader>
@@ -354,6 +382,18 @@ export default function CheckoutPage() {
               <span>Subtotal</span>
               <span>${subtotal.toLocaleString('es-AR')}</span>
             </div>
+            {pointsToRedeem > 0 && (
+              <div className="flex justify-between text-sm text-amber-600 dark:text-amber-400">
+                <span>Puntos canjeados</span>
+                <span>-${pointsToRedeem.toLocaleString('es-AR')}</span>
+              </div>
+            )}
+            {couponDiscount > 0 && (
+              <div className="flex justify-between text-sm text-purple-600 dark:text-purple-400">
+                <span>Cupón ({appliedCoupon.coupon.code})</span>
+                <span>-${couponDiscount.toLocaleString('es-AR')}</span>
+              </div>
+            )}
             {orderType === 'delivery' && deliveryInfo?.inCoverage && (
               <div className="flex justify-between text-sm">
                 <span>Envío</span>

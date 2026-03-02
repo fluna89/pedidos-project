@@ -3,6 +3,7 @@ import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { AddressProvider } from '@/context/AddressContext'
 import { CartProvider } from '@/context/CartContext'
+import { LoyaltyProvider } from '@/context/LoyaltyContext'
 import AppLayout from '@/components/layout/AppLayout'
 import GuestRoute from '@/components/auth/GuestRoute'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
@@ -23,6 +24,7 @@ function App() {
       <AuthProvider>
         <AddressProvider>
           <CartProvider>
+            <LoyaltyProvider>
             <BrowserRouter>
               <Routes>
                 <Route element={<AppLayout />}>
@@ -39,6 +41,7 @@ function App() {
                 </Route>
               </Routes>
             </BrowserRouter>
+            </LoyaltyProvider>
           </CartProvider>
         </AddressProvider>
       </AuthProvider>

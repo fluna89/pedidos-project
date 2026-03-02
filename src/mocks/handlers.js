@@ -9,6 +9,8 @@ import {
   mockStoreLocation,
   mockMaxDeliveryKm,
   mockDeliveryZones,
+  mockPointsHistory,
+  mockCoupons,
 } from './data'
 
 const MOCK_DELAY = 300 // ms
@@ -156,4 +158,128 @@ export async function deleteAddress(id) {
   if (idx === -1) throw new Error('Dirección no encontrada')
   addresses.splice(idx, 1)
   return { success: true }
+}
+
+// ── Loyalty / Points ───────────────────────────────────
+
+let pointsHistory = [...mockPointsHistory]
+
+/**
+ * Return available (non-expired) points balance for a user.
+ */
+export async function getPointsBalance(userId) {
+  await delay()
+  const now = new Date()
+  let balance = 0
+  for (const entry of pointsHistory) {
+    if (entry.userId !== userId) continue
+    if (entry.type === 'earn') {
+      const expires = new Date(entry.expiresAt)
+      if (expires > now) {
+        balance += entry.points
+      }
+    } else if (entry.type === 'redeem') {
+      balance += entry.points // negative number
+    }
+  }
+  return { balance: Math.max(0, balance), userId }
+}
+
+/**
+ * Return full points history for a user (sorted newest first).
+ */
+export async function getPointsHistory(userId) {
+  await delay()
+  return pointsHistory
+    .filter((e) => e.userId === userId)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .map((e) => ({ ...e }))
+}
+
+/**
+ * Redeem points as discount. Creates a negative entry.
+ * Returns the updated balance.
+ */
+export async function redeemPoints(userId, points) {
+  await delay()
+  if (points <= 0) throw new Error('Los puntos a canjear deben ser mayor a 0')
+  const { balance } = await getPointsBalance(userId)
+  if (points > balance) throw new Error('No tenés suficientes puntos')
+  const entry = {
+    id: 'pts-' + Date.now(),
+    userId,
+    type: 'redeem',
+    points: -points,
+    description: 'Canje en pedido',
+    date: new Date().toISOString(),
+    expiresAt: null,
+  }
+  pointsHistory.push(entry)
+  return { balance: balance - points, redeemed: points }
+}
+
+/**
+ * Earn points after completing an order.
+ * 1 peso = 1 point (subtotal only, excluding shipping).
+ */
+export async function earnPoints(userId, subtotal, orderId) {
+  await delay()
+  const points = Math.floor(subtotal) // 1 peso = 1 punto
+  if (points <= 0) return { earned: 0 }
+  const now = new Date()
+  const expiresAt = new Date(now)
+  expiresAt.setMonth(expiresAt.getMonth() + 3)
+  const entry = {
+    id: 'pts-' + Date.now(),
+    userId,
+    type: 'earn',
+    points,
+    description: `Pedido #${orderId}`,
+    date: now.toISOString(),
+    expiresAt: expiresAt.toISOString(),
+  }
+  pointsHistory.push(entry)
+  return { earned: points }
+}
+
+// ── Coupons ────────────────────────────────────────────
+
+/**
+ * Validate a coupon code. Returns coupon info + calculated discount for the given subtotal.
+ */
+export async function validateCoupon(code, subtotal = 0) {
+  await delay()
+  const coupon = mockCoupons.find(
+    (c) => c.code.toUpperCase() === code.trim().toUpperCase(),
+  )
+  if (!coupon) throw new Error('Código de descuento no válido')
+  if (!coupon.active) throw new Error('Este cupón ya no está activo')
+  if (new Date(coupon.expiresAt) < new Date())
+    throw new Error('Este cupón ha expirado')
+  if (subtotal < coupon.minOrder)
+    throw new Error(
+      `Pedido mínimo de $${coupon.minOrder.toLocaleString('es-AR')} para este cupón`,
+    )
+
+  let discount = 0
+  if (coupon.type === 'percentage') {
+    discount = Math.round((subtotal * coupon.value) / 100)
+    if (coupon.maxDiscount) discount = Math.min(discount, coupon.maxDiscount)
+  } else {
+    discount = coupon.value
+  }
+  // Discount cannot exceed subtotal
+  discount = Math.min(discount, subtotal)
+
+  return {
+    valid: true,
+    coupon: {
+      id: coupon.id,
+      code: coupon.code,
+      description: coupon.description,
+      type: coupon.type,
+      value: coupon.value,
+    },
+    discount,
+  }
 }

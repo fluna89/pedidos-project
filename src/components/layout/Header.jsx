@@ -4,6 +4,7 @@ import { useTheme } from '@/hooks/useTheme'
 import { useCart } from '@/hooks/useCart'
 import { Button } from '@/components/ui/button'
 import { IceCreamCone, LogOut, MapPin, Moon, ShoppingCart, Sun, UtensilsCrossed, User } from 'lucide-react'
+import PointsBadge from '@/components/loyalty/PointsBadge'
 
 export default function Header() {
   const { user, isAuthenticated, isGuest, logout } = useAuth()
@@ -34,6 +35,8 @@ export default function Header() {
               </Button>
             </Link>
           )}
+
+          <PointsBadge />
 
           <Link to="/cart" className="relative">
             <Button variant="ghost" size="icon" aria-label="Carrito">
