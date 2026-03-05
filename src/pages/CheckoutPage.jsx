@@ -158,11 +158,9 @@ export default function CheckoutPage() {
 
       // 4. Earn points (only when payment is confirmed — not for cash/transfer)
       let pointsEarned = 0
+      const netSubtotal = Math.max(0, subtotal - pointsToRedeem - couponDiscount)
       if (loyaltyEligible && payment.status === 'pagado') {
-        const earnResult = await earnAfterOrder(
-          Math.max(0, subtotal - pointsToRedeem - couponDiscount),
-          order.id,
-        )
+        const earnResult = await earnAfterOrder(netSubtotal, order.id)
         pointsEarned = earnResult.earned
       }
 
@@ -175,6 +173,9 @@ export default function CheckoutPage() {
           payment,
           pointsEarned,
           pointsPending: loyaltyEligible && payment.status !== 'pagado',
+          pendingPointsAmount: loyaltyEligible && payment.status !== 'pagado'
+            ? netSubtotal
+            : 0,
         },
       })
     } catch (err) {

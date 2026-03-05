@@ -2,6 +2,15 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.7.3] - 2026-03-04
+
+### Corregido
+
+- **Puntos diferidos para pagos pendientes**: en pagos con efectivo o transferencia, los puntos se acreditan recién cuando se confirma el pago
+- Página de confirmación muestra aviso "Los puntos se acreditarán cuando se confirme el pago" para estos métodos
+
+---
+
 ## [0.7.2] - 2026-03-04
 
 ### Corregido

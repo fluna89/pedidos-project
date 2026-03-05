@@ -26,6 +26,7 @@ export default function OrderConfirmationPage() {
   const paymentData = location.state?.payment
   const pointsEarned = location.state?.pointsEarned ?? 0
   const pointsPending = location.state?.pointsPending ?? false
+  const pendingPointsAmount = location.state?.pendingPointsAmount ?? 0
 
   // Redirect to home if no order data (e.g. manual navigation)
   useEffect(() => {
@@ -132,7 +133,11 @@ export default function OrderConfirmationPage() {
           {pointsPending && pointsEarned === 0 && !isGuest && (
             <div className="rounded-md bg-gray-50 px-4 py-3 text-center text-sm dark:bg-gray-800">
               <span className="text-gray-600 dark:text-gray-400">
-                ⭐ Los puntos se acreditarán cuando se confirme el pago
+                ⭐ Tenés{' '}
+                <span className="font-bold">
+                  {pendingPointsAmount.toLocaleString('es-AR')}
+                </span>{' '}
+                puntos pendientes de acreditación al confirmar el pago
               </span>
             </div>
           )}
