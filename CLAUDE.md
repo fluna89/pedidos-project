@@ -34,7 +34,8 @@ src/
 │   ├── addresses/           # AddressForm, AddressList
 │   ├── catalog/             # ProductCard
 │   ├── checkout/            # PaymentMethodSelector
-│   └── loyalty/             # PointsBadge, CouponInput, RedeemPoints
+│   ├── loyalty/             # PointsBadge, CouponInput, RedeemPoints
+│   └── panel/               # ActiveOrderSection, OrderHistorySection, PointsSection, AccountSection
 ├── context/                 # Each context uses 2 files:
 │   ├── auth-context.js      #   - *-context.js → createContext()
 │   ├── AuthContext.jsx       #   - *Context.jsx → Provider with logic
@@ -108,7 +109,7 @@ All backend logic is simulated in `src/mocks/`. Each handler is an `async` funct
 - **Coverage zone**: 5 km from CABA center (-34.6037, -58.3816)
 - **Delivery zones**: Cercana ≤1.5km ($500), Media ≤3km ($800), Lejana ≤5km ($1,200)
 
-## Current State (v0.7.0)
+## Current State (v0.8.0)
 
 ### Implemented
 - Auth: login, registration, guest mode, Google mock, password recovery
@@ -121,9 +122,9 @@ All backend logic is simulated in `src/mocks/`. Each handler is an `async` funct
 - Responsive header with MobileUserBar for small screens
 - Payment methods: Mercado Pago, bank transfer, card, cash on delivery
 - Order confirmation page with payment status and points earned
+- User panel: active order tracking, order history, points balance, account management
 
 ### Pending (roadmap)
-- **v0.8.0**: User panel (order status, history, points balance, account management)
 - **Future**: Python backend, real-time notifications, testing, CI/CD
 
 ## Useful Commands

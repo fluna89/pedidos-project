@@ -2,6 +2,22 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.8.0] - 2026-03-04
+
+### Implementado
+
+- **Panel del usuario** — nueva página `/panel` con 4 secciones en tabs
+- **Pedido activo**: estado en tiempo real con barra de progreso visual (pendiente → entregado)
+- **Historial de pedidos**: lista de pedidos anteriores con detalle expandible (items, descuentos, envío, pago)
+- **Saldo de puntos**: balance actual, historial de movimientos con fecha de vencimiento
+- **Mi cuenta**: edición de nombre y email, accesos rápidos a direcciones y cambio de contraseña
+- **Mock orders**: 4 pedidos de ejemplo para el usuario mock (1 activo en camino, 3 entregados)
+- **Handlers**: `getUserOrders`, `getActiveOrder`, `updateUserProfile`
+- **Navegación**: nombre de usuario en header (md+) enlaza al panel, saludo en MobileUserBar enlaza al panel
+- **Ruta protegida**: solo usuarios registrados acceden al panel
+
+---
+
 ## [0.7.3] - 2026-03-04
 
 ### Corregido
@@ -203,13 +219,6 @@ Registro de funcionalidades implementadas y planificadas.
 ---
 
 ## Roadmap (funcionalidades futuras)
-
-### v0.8.0 - Panel del Usuario
-
-- [ ] Estado en tiempo real del pedido activo
-- [ ] Historial de pedidos
-- [ ] Saldo de puntos y vencimiento
-- [ ] Gestión de direcciones y datos de cuenta
 
 ### Futuro
 

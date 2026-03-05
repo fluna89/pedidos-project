@@ -1,0 +1,170 @@
+import { useState, useEffect } from 'react'
+import { getActiveOrder } from '@/mocks/handlers'
+import { orderStatusLabels } from '@/mocks/data'
+import { useAuth } from '@/hooks/useAuth'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card'
+import { Loader2, Package, Truck, Store } from 'lucide-react'
+
+// Status progress steps for delivery / pickup
+const deliverySteps = [
+  'pendiente',
+  'confirmado',
+  'en_preparacion',
+  'listo',
+  'en_camino',
+  'entregado',
+]
+const pickupSteps = [
+  'pendiente',
+  'confirmado',
+  'en_preparacion',
+  'listo',
+  'entregado',
+]
+
+function StatusProgress({ status, orderType }) {
+  const steps = orderType === 'pickup' ? pickupSteps : deliverySteps
+  const currentIdx = steps.indexOf(status)
+
+  return (
+    <div className="flex items-center gap-1">
+      {steps.map((step, i) => {
+        const done = i <= currentIdx
+        return (
+          <div key={step} className="flex flex-1 flex-col items-center gap-1">
+            <div
+              className={
+                done
+                  ? 'h-2 w-full rounded-full bg-green-500'
+                  : 'h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700'
+              }
+            />
+            <span
+              className={`text-[10px] leading-tight ${
+                done
+                  ? 'font-medium text-green-700 dark:text-green-400'
+                  : 'text-gray-400 dark:text-gray-500'
+              }`}
+            >
+              {orderStatusLabels[step] || step}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+export default function ActiveOrderSection() {
+  const { user } = useAuth()
+  const [order, setOrder] = useState(undefined) // undefined = loading
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!user?.id) return
+    let cancelled = false
+    getActiveOrder(user.id)
+      .then((result) => {
+        if (!cancelled) setOrder(result)
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user?.id])
+
+  if (order === undefined) {
+    return (
+      <div className="flex items-center gap-2 py-6 text-sm text-gray-400 dark:text-gray-500">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Cargando pedido activo...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950 dark:text-red-400">
+        {error}
+      </div>
+    )
+  }
+
+  if (!order) {
+    return (
+      <div className="rounded-md bg-gray-50 px-4 py-6 text-center dark:bg-gray-800">
+        <Package className="mx-auto mb-2 h-8 w-8 text-gray-300 dark:text-gray-600" />
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          No tenés pedidos activos
+        </p>
+      </div>
+    )
+  }
+
+  const isDelivery = order.orderType === 'delivery'
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base">Pedido #{order.id}</CardTitle>
+          <span className="flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-900 dark:text-green-300">
+            {isDelivery ? (
+              <Truck className="h-3 w-3" />
+            ) : (
+              <Store className="h-3 w-3" />
+            )}
+            {isDelivery ? 'Delivery' : 'Retiro'}
+          </span>
+        </div>
+        <CardDescription>
+          {new Date(order.createdAt).toLocaleDateString('es-AR', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+          {isDelivery &&
+            order.address &&
+            ` · ${order.address.alias || order.address.street}`}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Status progress bar */}
+        <StatusProgress status={order.status} orderType={order.orderType} />
+
+        {/* Items */}
+        <div className="space-y-1 text-sm">
+          {order.items.map((item, i) => (
+            <div key={i} className="flex justify-between">
+              <span>
+                {item.quantity}x {item.name}{' '}
+                <span className="text-gray-500 dark:text-gray-400">
+                  ({item.format}
+                  {item.flavors && ` · ${item.flavors}`})
+                </span>
+              </span>
+              <span className="font-medium">
+                ${(item.unitPrice * item.quantity).toLocaleString('es-AR')}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Total */}
+        <div className="flex justify-between border-t border-gray-200 pt-2 text-sm font-bold dark:border-gray-700">
+          <span>Total</span>
+          <span>${order.total.toLocaleString('es-AR')}</span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

@@ -238,6 +238,141 @@ export const mockOrderStatuses = [
   'entregado',
 ]
 
+// Status labels for display
+export const orderStatusLabels = {
+  pendiente: 'Pendiente',
+  pendiente_pago: 'Pendiente de pago',
+  confirmado: 'Confirmado',
+  en_preparacion: 'En preparación',
+  listo: 'Listo',
+  en_camino: 'En camino',
+  entregado: 'Entregado',
+  cancelado: 'Cancelado',
+}
+
+// ── Historial de pedidos (mock user id: 1) ─────────────
+
+export const mockOrders = [
+  {
+    id: 2048,
+    userId: 1,
+    status: 'en_camino',
+    orderType: 'delivery',
+    items: [
+      {
+        name: 'Helado por kilo',
+        format: '1 kg',
+        flavors: 'Dulce de leche, Chocolate, Frutilla, Sambayón, Pistacho',
+        quantity: 1,
+        unitPrice: 9000,
+      },
+      {
+        name: 'Milkshake',
+        format: 'Grande (500ml)',
+        flavors: 'Frutilla',
+        quantity: 2,
+        unitPrice: 4200,
+      },
+    ],
+    subtotal: 17400,
+    deliveryCost: 800,
+    pointsRedeemed: 0,
+    coupon: null,
+    couponDiscount: 0,
+    total: 18200,
+    paymentMethod: 'Mercado Pago',
+    paymentStatus: 'pagado',
+    address: { alias: 'Casa', street: 'Av. Corrientes 1234' },
+    createdAt: '2026-03-04T15:30:00Z',
+    updatedAt: '2026-03-04T16:10:00Z',
+  },
+  {
+    id: 2035,
+    userId: 1,
+    status: 'entregado',
+    orderType: 'delivery',
+    items: [
+      {
+        name: 'Helado por kilo',
+        format: '1/2 kg',
+        flavors: 'Tiramisú, Mascarpone con frutos rojos, Café',
+        quantity: 1,
+        unitPrice: 5500,
+      },
+    ],
+    subtotal: 5500,
+    deliveryCost: 500,
+    pointsRedeemed: 2000,
+    coupon: 'AINARA10',
+    couponDiscount: 550,
+    total: 3450,
+    paymentMethod: 'Tarjeta crédito/débito',
+    paymentStatus: 'pagado',
+    address: { alias: 'Trabajo', street: 'Maipú 456' },
+    createdAt: '2026-02-28T12:00:00Z',
+    updatedAt: '2026-02-28T13:45:00Z',
+  },
+  {
+    id: 2021,
+    userId: 1,
+    status: 'entregado',
+    orderType: 'pickup',
+    items: [
+      {
+        name: 'Torta helada',
+        format: 'Mediana (8 porc.)',
+        flavors: 'Dulce de leche, Chocolate amargo',
+        quantity: 1,
+        unitPrice: 12000,
+      },
+      {
+        name: 'Sundae',
+        format: 'Individual',
+        flavors: 'Crema americana',
+        quantity: 3,
+        unitPrice: 3500,
+      },
+    ],
+    subtotal: 22500,
+    deliveryCost: 0,
+    pointsRedeemed: 0,
+    coupon: null,
+    couponDiscount: 0,
+    total: 22500,
+    paymentMethod: 'Efectivo',
+    paymentStatus: 'pagado',
+    address: null,
+    createdAt: '2026-02-14T18:00:00Z',
+    updatedAt: '2026-02-14T18:30:00Z',
+  },
+  {
+    id: 2010,
+    userId: 1,
+    status: 'entregado',
+    orderType: 'delivery',
+    items: [
+      {
+        name: 'Helado por kilo',
+        format: '1 kg',
+        flavors: 'Dulce de leche granizado, Tramontana, Banana split, Limón, Menta granizada',
+        quantity: 1,
+        unitPrice: 9000,
+      },
+    ],
+    subtotal: 9000,
+    deliveryCost: 1200,
+    pointsRedeemed: 0,
+    coupon: 'HELADOGRATIS',
+    couponDiscount: 3500,
+    total: 6700,
+    paymentMethod: 'Transferencia bancaria',
+    paymentStatus: 'pagado',
+    address: { alias: 'Casa', street: 'Av. Corrientes 1234' },
+    createdAt: '2026-01-20T14:00:00Z',
+    updatedAt: '2026-01-20T15:15:00Z',
+  },
+]
+
 // Coverage zone — addresses within 5 km of the store are covered
 export const mockStoreLocation = { lat: -34.6037, lng: -58.3816 } // CABA centro
 export const mockMaxDeliveryKm = 5

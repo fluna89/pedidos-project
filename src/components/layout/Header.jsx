@@ -60,9 +60,11 @@ export default function Header() {
 
           {isAuthenticated ? (
             <>
-              <span className="hidden text-sm text-gray-600 dark:text-gray-400 md:inline">
-                {user.isGuest ? 'Invitado' : user.name}
-              </span>
+              <Link to="/panel" className="hidden md:inline">
+                <span className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
+                  {user.isGuest ? 'Invitado' : user.name}
+                </span>
+              </Link>
               <Button variant="ghost" size="icon" onClick={logout} aria-label="Cerrar sesión" className="text-red-500 hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300">
                 <LogOut className="h-4 w-4" />
               </Button>

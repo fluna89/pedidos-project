@@ -18,6 +18,7 @@ import ProductDetailPage from '@/pages/ProductDetailPage'
 import CartPage from '@/pages/CartPage'
 import CheckoutPage from '@/pages/CheckoutPage'
 import OrderConfirmationPage from '@/pages/OrderConfirmationPage'
+import UserPanelPage from '@/pages/UserPanelPage'
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
                   <Route path="/recover" element={<GuestRoute><RecoverPage /></GuestRoute>} />
                   <Route path="/guest" element={<GuestRoute><GuestPage /></GuestRoute>} />
                   <Route path="/addresses" element={<ProtectedRoute><AddressesPage /></ProtectedRoute>} />
+                  <Route path="/panel" element={<ProtectedRoute><UserPanelPage /></ProtectedRoute>} />
                 </Route>
               </Routes>
             </BrowserRouter>

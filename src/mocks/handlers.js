@@ -12,6 +12,7 @@ import {
   mockPointsHistory,
   mockCoupons,
   mockPaymentMethods,
+  mockOrders,
 } from './data'
 
 const MOCK_DELAY = 300 // ms
@@ -57,6 +58,34 @@ export async function createOrder(orderData) {
     status: 'pendiente',
     createdAt: new Date().toISOString(),
   }
+}
+
+// ── User Panel ────────────────────────────────────────
+
+/** Get all orders for a user, sorted newest first. */
+export async function getUserOrders(userId) {
+  await delay()
+  return mockOrders
+    .filter((o) => o.userId === userId)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .map((o) => ({ ...o }))
+}
+
+/** Get the active (non-terminal) order for a user, if any. */
+export async function getActiveOrder(userId) {
+  await delay()
+  const terminalStatuses = ['entregado', 'cancelado']
+  const active = mockOrders.find(
+    (o) => o.userId === userId && !terminalStatuses.includes(o.status),
+  )
+  return active ? { ...active } : null
+}
+
+/** Update user account data (name, email). */
+export async function updateUserProfile(userId, data) {
+  await delay(400)
+  // Mock: just return merged data
+  return { id: userId, ...data }
 }
 
 // ── Payment Methods ────────────────────────────────────

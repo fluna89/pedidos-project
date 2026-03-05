@@ -19,11 +19,14 @@ export default function MobileUserBar() {
   return (
     <div className="border-b border-gray-200 bg-gray-50 px-3 py-1.5 sm:hidden dark:border-gray-700 dark:bg-gray-900">
       <div className="mx-auto flex max-w-5xl items-center justify-between">
-        {/* Left: user greeting */}
-        <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
+        {/* Left: user greeting — links to panel */}
+        <Link
+          to={isGuest ? '#' : '/panel'}
+          className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400"
+        >
           <User className="h-3 w-3" />
           <span>Hola, <span className="font-medium text-gray-800 dark:text-gray-200">{displayName}</span></span>
-        </div>
+        </Link>
 
         {/* Right: points + addresses shortcut */}
         <div className="flex items-center gap-3">
