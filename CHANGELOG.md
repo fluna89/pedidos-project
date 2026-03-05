@@ -2,6 +2,22 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.7.2] - 2026-03-04
+
+### Corregido
+
+- **Efectivo disponible para retiro en local**: se eliminó la restricción que limitaba el pago en efectivo solo a delivery
+
+---
+
+## [0.7.1] - 2026-03-04
+
+### Corregido
+
+- **Transferencia bancaria como pendiente de pago**: el pago por transferencia ahora queda con estado "pendiente de pago" igual que efectivo
+
+---
+
 ## [0.7.0] - 2026-03-05
 
 ### Implementado

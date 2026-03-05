@@ -427,7 +427,6 @@ export default function CheckoutPage() {
 
       {/* Payment method selection */}
       <PaymentMethodSelector
-        orderType={orderType}
         selectedId={paymentMethod?.id ?? null}
         onSelect={handlePaymentSelect}
       />

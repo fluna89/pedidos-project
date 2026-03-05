@@ -63,13 +63,11 @@ export async function createOrder(orderData) {
 
 /**
  * Get available payment methods.
- * Filters out cash-only if order type is pickup.
  */
-export async function getPaymentMethods(orderType = 'delivery') {
+export async function getPaymentMethods() {
   await delay()
   return mockPaymentMethods
     .filter((m) => m.available)
-    .filter((m) => !(m.onlyDelivery && orderType !== 'delivery'))
     .map((m) => ({ ...m }))
 }
 

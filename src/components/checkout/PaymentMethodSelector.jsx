@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { getPaymentMethods } from '@/mocks/handlers'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
@@ -12,29 +12,27 @@ import { Loader2, Copy, Check } from 'lucide-react'
  *  - onSelect(method) — called when a method is chosen
  */
 export default function PaymentMethodSelector({
-  orderType,
   selectedId,
   onSelect,
 }) {
-  // Store { methods, orderType } together to derive loading state
-  const [result, setResult] = useState(null)
+  const [methods, setMethods] = useState([])
+  const [loaded, setLoaded] = useState(false)
   const [copiedField, setCopiedField] = useState(null)
 
   useEffect(() => {
     let cancelled = false
-    getPaymentMethods(orderType).then((methods) => {
+    getPaymentMethods().then((result) => {
       if (!cancelled) {
-        setResult({ methods, orderType })
+        setMethods(result)
+        setLoaded(true)
       }
     })
     return () => {
       cancelled = true
     }
-  }, [orderType])
+  }, [])
 
-  // Derive loading: no result yet, or result is stale (different orderType)
-  const loading = !result || result.orderType !== orderType
-  const methods = useMemo(() => result?.methods ?? [], [result])
+  const loading = !loaded
 
   // Reset selection when order type changes and current method is no longer available
   useEffect(() => {
@@ -142,11 +140,11 @@ export default function PaymentMethodSelector({
         </div>
       )}
 
-      {/* Cash on delivery note */}
+      {/* Cash note */}
       {selected?.id === 'cash' && (
         <div className="rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:bg-amber-950 dark:text-amber-300">
-          💵 Tené el monto exacto preparado. El pedido queda pendiente hasta que
-          el delivery confirme el cobro.
+          💵 Tené el monto exacto preparado. El pedido queda pendiente hasta
+          confirmar el cobro.
         </div>
       )}
     </div>

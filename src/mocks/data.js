@@ -286,12 +286,11 @@ export const mockPaymentMethods = [
   },
   {
     id: 'cash',
-    name: 'Efectivo al delivery',
+    name: 'Efectivo',
     icon: '💵',
-    description: 'Pagás al recibir tu pedido',
+    description: 'Pagás al recibir o retirar tu pedido',
     type: 'cash',
     available: true,
-    onlyDelivery: true,
   },
 ]
 
