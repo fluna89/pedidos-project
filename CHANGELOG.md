@@ -19,6 +19,17 @@ Registro de funcionalidades implementadas y planificadas.
 - **Desglose en checkout**: subtotal − puntos − cupón + envío = total
 - Descuentos solo para usuarios registrados (invitados ven cupones pero no puntos)
 
+## [0.6.1] - 2026-03-04
+
+### Mejorado
+
+- **Header mobile optimizado**: solo iconos esenciales en pantallas chicas, textos en sm+
+- **Marca responsive**: "Ainara" en mobile, "Ainara Helados" en sm+
+- **MobileUserBar**: barra contextual debajo del header (solo mobile) con saludo, puntos y acceso a Direcciones
+- **Botón logout** en rojo para distinción visual
+- **Botón login** en verde con fondo semitransparente e ícono `CircleUserRound`
+- **Nombre de usuario** visible solo en md+ para ahorrar espacio
+
 ---
 
 ## [0.1.0] - 2026-02-28
