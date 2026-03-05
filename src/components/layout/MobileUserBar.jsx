@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useLoyalty } from '@/hooks/useLoyalty'
-import { MapPin, Star, ClipboardList } from 'lucide-react'
+import { MapPin, Star, UserCircle } from 'lucide-react'
 
 /**
  * Thin contextual bar shown ONLY on mobile (< sm) for registered users.
@@ -10,7 +10,7 @@ import { MapPin, Star, ClipboardList } from 'lucide-react'
  * Hidden for guests — guest status is shown on HomePage instead.
  */
 export default function MobileUserBar() {
-  const { isAuthenticated, isGuest } = useAuth()
+  const { isAuthenticated, isGuest, user } = useAuth()
   const { balance, eligible } = useLoyalty()
 
   // Only show for registered (non-guest) authenticated users
@@ -22,10 +22,10 @@ export default function MobileUserBar() {
         {/* Left: panel link */}
         <Link
           to="/panel"
-          className="flex items-center gap-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+          className="flex items-center gap-1.5 rounded-full bg-gray-200 px-2.5 py-1 text-xs font-semibold text-gray-700 active:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:active:bg-gray-600"
         >
-          <ClipboardList className="h-3 w-3" />
-          Mis pedidos
+          <UserCircle className="h-3.5 w-3.5" />
+          {user?.name || 'Mi cuenta'}
         </Link>
 
         {/* Right: points + addresses shortcut */}

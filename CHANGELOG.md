@@ -2,6 +2,16 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.8.8] - 2026-03-05
+
+### Mejorado
+
+- **Enlace al panel con nombre de usuario**: reemplazado "Mis pedidos" por el nombre del usuario con ícono `UserCircle`, enlaza al panel
+- **Aspecto tappeable en mobile**: nombre del usuario en MobileUserBar con estilo pill (`rounded-full`, fondo gris, `active:` feedback)
+- **Header desktop**: nombre como botón ghost con `font-semibold`
+
+---
+
 ## [0.8.7] - 2026-03-05
 
 ### Corregido

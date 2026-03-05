@@ -3,11 +3,11 @@ import { useAuth } from '@/hooks/useAuth'
 import { useTheme } from '@/hooks/useTheme'
 import { useCart } from '@/hooks/useCart'
 import { Button } from '@/components/ui/button'
-import { CircleUserRound, ClipboardList, IceCreamCone, LogOut, MapPin, Moon, ShoppingCart, Sun, UtensilsCrossed } from 'lucide-react'
+import { CircleUserRound, IceCreamCone, LogOut, MapPin, Moon, ShoppingCart, Sun, UtensilsCrossed, UserCircle } from 'lucide-react'
 import PointsBadge from '@/components/loyalty/PointsBadge'
 
 export default function Header() {
-  const { isAuthenticated, isGuest, logout } = useAuth()
+  const { isAuthenticated, isGuest, user, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { itemCount } = useCart()
 
@@ -62,9 +62,9 @@ export default function Header() {
             <>
               {!isGuest && (
                 <Link to="/panel" className="hidden sm:block">
-                  <Button variant="outline" size="sm" className="border-gray-300 font-semibold dark:border-gray-600">
-                    <ClipboardList className="mr-1 h-4 w-4" />
-                    Mis pedidos
+                  <Button variant="ghost" size="sm" className="gap-1.5 font-semibold">
+                    <UserCircle className="h-4 w-4" />
+                    {user?.name || 'Mi cuenta'}
                   </Button>
                 </Link>
               )}
