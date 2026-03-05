@@ -13,30 +13,35 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-1.5 text-lg font-bold text-gray-900 dark:text-gray-100">
-          <IceCreamCone className="h-5 w-5" />
-          Ainara Helados
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-3 sm:px-4">
+        <Link to="/" className="flex items-center gap-1.5 font-bold text-gray-900 dark:text-gray-100">
+          <IceCreamCone className="h-5 w-5 shrink-0" />
+          <span className="text-base sm:text-lg">
+            <span className="sm:hidden">Ainara</span>
+            <span className="hidden sm:inline">Ainara Helados</span>
+          </span>
         </Link>
 
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-1 sm:gap-2">
           <Link to="/menu">
-            <Button variant="ghost" size="sm">
-              <UtensilsCrossed className="mr-1 h-4 w-4" />
+            <Button variant="ghost" size="icon" className="sm:w-auto sm:px-3">
+              <UtensilsCrossed className="h-4 w-4 sm:mr-1" />
               <span className="hidden sm:inline">Menú</span>
             </Button>
           </Link>
 
           {isAuthenticated && !isGuest && (
-            <Link to="/addresses">
+            <Link to="/addresses" className="hidden sm:block">
               <Button variant="ghost" size="sm">
                 <MapPin className="mr-1 h-4 w-4" />
-                <span className="hidden sm:inline">Direcciones</span>
+                Direcciones
               </Button>
             </Link>
           )}
 
-          <PointsBadge />
+          <div className="hidden sm:block">
+            <PointsBadge />
+          </div>
 
           <Link to="/cart" className="relative">
             <Button variant="ghost" size="icon" aria-label="Carrito">
@@ -55,18 +60,18 @@ export default function Header() {
 
           {isAuthenticated ? (
             <>
-              <span className="hidden text-sm text-gray-600 dark:text-gray-400 sm:inline">
+              <span className="hidden text-sm text-gray-600 dark:text-gray-400 md:inline">
                 {user.isGuest ? 'Invitado' : user.name}
               </span>
-              <Button variant="ghost" size="icon" onClick={logout}>
+              <Button variant="ghost" size="icon" onClick={logout} aria-label="Cerrar sesión">
                 <LogOut className="h-4 w-4" />
               </Button>
             </>
           ) : (
             <Link to="/login">
-              <Button variant="ghost" size="sm">
-                <User className="mr-1 h-4 w-4" />
-                Ingresar
+              <Button variant="ghost" size="icon" className="sm:w-auto sm:px-3">
+                <User className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">Ingresar</span>
               </Button>
             </Link>
           )}
