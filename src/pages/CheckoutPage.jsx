@@ -156,9 +156,9 @@ export default function CheckoutPage() {
         total,
       )
 
-      // 4. Earn points (registered users only, on subtotal excl. shipping)
+      // 4. Earn points (only when payment is confirmed — not for cash/transfer)
       let pointsEarned = 0
-      if (loyaltyEligible) {
+      if (loyaltyEligible && payment.status === 'pagado') {
         const earnResult = await earnAfterOrder(
           Math.max(0, subtotal - pointsToRedeem - couponDiscount),
           order.id,
@@ -170,7 +170,12 @@ export default function CheckoutPage() {
       clearCart()
       navigate('/order-confirmation', {
         replace: true,
-        state: { order, payment, pointsEarned },
+        state: {
+          order,
+          payment,
+          pointsEarned,
+          pointsPending: loyaltyEligible && payment.status !== 'pagado',
+        },
       })
     } catch (err) {
       setSubmitError(err.message || 'Error al procesar el pedido')
