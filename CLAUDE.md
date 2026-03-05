@@ -76,7 +76,7 @@ src/
 ### Git and versioning
 - **Commit messages**: English, conventional commits format (`feat:`, `fix:`, `style:`, `docs:`, `refactor:`)
 - **Branch**: `master`, direct push to `origin/master`
-- **Changelog**: in `CHANGELOG.md`, ordered newest to oldest. Roadmap at the bottom
+- **Changelog**: in `CHANGELOG.md`, ordered newest to oldest. Roadmap at the bottom. **Every version bump MUST include its changelog entry before committing**
 - **Versions**: semver — major features are minor bumps (v0.X.0), fixes/improvements are patch (v0.X.Y)
 
 ### Conversation

@@ -2,6 +2,50 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.8.4] - 2026-03-05
+
+### Implementado
+
+- **Persistencia mock de pedidos**: `createOrder` ahora guarda el pedido en memoria para que aparezca en panel e historial
+- **Progresión automática de estado**: cada 15 s el pedido avanza (pendiente → confirmado → preparación → listo → en camino → entregado)
+- **Polling en ActiveOrderSection**: refresca cada 10 s para mostrar el avance en tiempo real
+- `processPayment` actualiza el `paymentStatus` del pedido almacenado
+- `CheckoutPage` pasa `userId` a `createOrder`
+
+### Corregido
+
+- **Layout barra de progreso**: label "En preparación" acortado a "Preparación", agregado `truncate` y `min-w-0` para evitar desborde
+
+---
+
+## [0.8.3] - 2026-03-05
+
+### Corregido
+
+- **Pedido activo mock eliminado**: se quitó el pedido en curso (id 2048) de los datos mock para que no aparezca sin haber hecho un pedido real
+
+---
+
+## [0.8.2] - 2026-03-05
+
+### Mejorado
+
+- **Banner invitado mejorado**: texto actualizado a "Creá una cuenta para ver el estado de tus pedidos, acumular puntos y guardar direcciones"
+- **Pedido activo en Home**: usuarios registrados ven su pedido en curso directamente en la página principal
+- **"Mi panel" → "Mis pedidos"**: renombrado y resaltado con `variant="outline"` y `font-semibold` en header y barra mobile
+
+---
+
+## [0.8.1] - 2026-03-05
+
+### Mejorado
+
+- **MobileUserBar solo para registrados**: la barra inferior ya no se muestra para invitados
+- **Banner invitado en Home**: los invitados ven un aviso para crear cuenta en la página principal
+- **Botón explícito al panel**: reemplazado el enlace con nombre por un botón "Mi panel" con ícono
+
+---
+
 ## [0.8.0] - 2026-03-04
 
 ### Implementado
@@ -15,6 +59,14 @@ Registro de funcionalidades implementadas y planificadas.
 - **Handlers**: `getUserOrders`, `getActiveOrder`, `updateUserProfile`
 - **Navegación**: nombre de usuario en header (md+) enlaza al panel, saludo en MobileUserBar enlaza al panel
 - **Ruta protegida**: solo usuarios registrados acceden al panel
+
+---
+
+## [0.7.4] - 2026-03-04
+
+### Mejorado
+
+- **Puntos pendientes visibles**: la página de confirmación muestra la cantidad de puntos que se acreditarán cuando se confirme el pago
 
 ---
 
