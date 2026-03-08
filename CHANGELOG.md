@@ -2,6 +2,15 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.9.1] - 2026-03-08
+
+### Corregido
+
+- **Tortas eliminadas**: se removieron las 4 tortas heladas del menú
+- **Filtro de categorías restaurado**: botones Todos / Helados / Postres / Bebidas en CatalogPage
+
+---
+
 ## [0.9.0] - 2026-03-08
 
 ### Implementado

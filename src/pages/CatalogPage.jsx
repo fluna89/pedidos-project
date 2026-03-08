@@ -1,23 +1,36 @@
 import { useState, useEffect } from 'react'
-import { getMenu } from '@/mocks/handlers'
+import { getMenu, getCategories } from '@/mocks/handlers'
+import { Button } from '@/components/ui/button'
 import ProductCard from '@/components/catalog/ProductCard'
 
 export default function CatalogPage() {
   const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
+  const [activeCategory, setActiveCategory] = useState(null) // null = all
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
-    getMenu().then((data) => {
+    async function load() {
+      const [menuData, catData] = await Promise.all([
+        getMenu(),
+        getCategories(),
+      ])
       if (!cancelled) {
-        setProducts(data)
+        setProducts(menuData)
+        setCategories(catData)
         setLoading(false)
       }
-    })
+    }
+    load()
     return () => {
       cancelled = true
     }
   }, [])
+
+  const filtered = activeCategory
+    ? products.filter((p) => p.category === activeCategory)
+    : products
 
   if (loading) {
     return (
@@ -31,13 +44,35 @@ export default function CatalogPage() {
     <div className="space-y-6">
       <h1 className="text-xl font-bold">Menú</h1>
 
-      {products.length === 0 ? (
+      {/* Category filter */}
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant={activeCategory === null ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setActiveCategory(null)}
+        >
+          Todos
+        </Button>
+        {categories.map((cat) => (
+          <Button
+            key={cat.id}
+            variant={activeCategory === cat.id ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setActiveCategory(cat.id)}
+          >
+            {cat.icon} {cat.name}
+          </Button>
+        ))}
+      </div>
+
+      {/* Product grid */}
+      {filtered.length === 0 ? (
         <p className="py-8 text-center text-gray-500 dark:text-gray-400">
-          No hay productos disponibles
+          No hay productos disponibles en esta categoría
         </p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
+          {filtered.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

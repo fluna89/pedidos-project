@@ -26,7 +26,11 @@ export const mockFlavors = [
 // Flat product list — each item is a single SKU with one format.
 // The user sees everything at a glance without navigating categories.
 
-export const mockCategories = [] // kept for API compat, not used in UI
+export const mockCategories = [
+  { id: 'helados', name: 'Helados', icon: '🍦' },
+  { id: 'postres', name: 'Postres', icon: '🍨' },
+  { id: 'bebidas', name: 'Bebidas', icon: '🥤' },
+]
 
 export const mockMenu = [
   // ── Helados por kilo ─────────
@@ -109,66 +113,6 @@ export const mockMenu = [
       { id: 'x-brownie', name: 'Brownie', price: 600 },
       { id: 'x-nueces', name: 'Nueces', price: 450 },
       { id: 'x-salsa-choc', name: 'Salsa extra de chocolate', price: 300 },
-    ],
-  },
-
-  // ── Tortas heladas ───────────
-  {
-    id: 6,
-    name: 'Torta helada clásica (6 porc.)',
-    description: 'Base de bizcochuelo, capas de helado y merengue',
-    category: 'tortas',
-    image: '🎂',
-    available: true,
-    hasFlavors: true,
-    formats: [{ id: 'f-torta-ch', name: 'Chica (6 porc.)', price: 12000, maxFlavors: 2 }],
-    extras: [
-      { id: 'x-merengue', name: 'Merengue italiano', price: 800 },
-      { id: 'x-salsa-choc', name: 'Cobertura de chocolate', price: 600 },
-      { id: 'x-deco', name: 'Decoración personalizada', price: 1000 },
-    ],
-  },
-  {
-    id: 7,
-    name: 'Torta helada clásica (12 porc.)',
-    description: 'Base de bizcochuelo, capas de helado y merengue',
-    category: 'tortas',
-    image: '🎂',
-    available: true,
-    hasFlavors: true,
-    formats: [{ id: 'f-torta-gr', name: 'Grande (12 porc.)', price: 20000, maxFlavors: 3 }],
-    extras: [
-      { id: 'x-merengue', name: 'Merengue italiano', price: 800 },
-      { id: 'x-salsa-choc', name: 'Cobertura de chocolate', price: 600 },
-      { id: 'x-deco', name: 'Decoración personalizada', price: 1000 },
-    ],
-  },
-  {
-    id: 8,
-    name: 'Torta brownie helada (6 porc.)',
-    description: 'Base de brownie húmedo con helado y ganache',
-    category: 'tortas',
-    image: '🍫',
-    available: true,
-    hasFlavors: true,
-    formats: [{ id: 'f-tbrownie-ch', name: 'Chica (6 porc.)', price: 14000, maxFlavors: 2 }],
-    extras: [
-      { id: 'x-nueces', name: 'Nueces', price: 600 },
-      { id: 'x-deco', name: 'Decoración personalizada', price: 1000 },
-    ],
-  },
-  {
-    id: 9,
-    name: 'Torta brownie helada (12 porc.)',
-    description: 'Base de brownie húmedo con helado y ganache',
-    category: 'tortas',
-    image: '🍫',
-    available: true,
-    hasFlavors: true,
-    formats: [{ id: 'f-tbrownie-gr', name: 'Grande (12 porc.)', price: 24000, maxFlavors: 3 }],
-    extras: [
-      { id: 'x-nueces', name: 'Nueces', price: 600 },
-      { id: 'x-deco', name: 'Decoración personalizada', price: 1000 },
     ],
   },
 
