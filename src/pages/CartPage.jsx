@@ -52,7 +52,12 @@ export default function CartPage() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {item.format.name}
                   {item.flavors.length > 0 &&
-                    ' · ' + item.flavors.map((f) => f.name).join(', ')}
+                    ' · ' +
+                      item.flavors
+                        .map((f) =>
+                          f.quantity ? `${f.quantity} ${f.name}` : f.name,
+                        )
+                        .join(', ')}
                   {item.extras.length > 0 &&
                     ' + ' + item.extras.map((e) => e.name).join(', ')}
                 </p>

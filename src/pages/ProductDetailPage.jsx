@@ -13,7 +13,7 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card'
-import { ArrowLeft, Check, ShoppingCart } from 'lucide-react'
+import { ArrowLeft, Check, Minus, Plus, ShoppingCart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function ProductDetailPage() {
@@ -26,18 +26,19 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [selectedFormat, setSelectedFormat] = useState(null)
   const [selectedFlavors, setSelectedFlavors] = useState([])
+  const [flavorQuantities, setFlavorQuantities] = useState({})
   const [selectedExtras, setSelectedExtras] = useState([])
   const [comment, setComment] = useState('')
   const [added, setAdded] = useState(false)
+
+  const isQuantityMode = product?.flavorMode === 'quantity'
 
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
-        const [data, flavors] = await Promise.all([
-          getMenuItem(Number(id)),
-          getFlavors(),
-        ])
+        const data = await getMenuItem(Number(id))
+        const flavors = await getFlavors(data.flavorsSource)
         if (!cancelled) {
           setProduct(data)
           setAllFlavors(flavors)
@@ -58,6 +59,11 @@ export default function ProductDetailPage() {
   }, [id, navigate])
 
   const maxFlavors = selectedFormat?.maxFlavors ?? 0
+  const unitCount = selectedFormat?.unitCount ?? 0
+  const totalQuantity = Object.values(flavorQuantities).reduce(
+    (sum, q) => sum + q,
+    0,
+  )
 
   // Reset flavors when format changes and new limit is smaller
   function handleFormatSelect(fmt) {
@@ -65,6 +71,10 @@ export default function ProductDetailPage() {
     setSelectedFlavors((prev) =>
       prev.length > fmt.maxFlavors ? prev.slice(0, fmt.maxFlavors) : prev,
     )
+    // Reset quantity selections when switching format
+    if (product?.flavorMode === 'quantity') {
+      setFlavorQuantities({})
+    }
   }
 
   function toggleFlavor(flavor) {
@@ -76,6 +86,24 @@ export default function ProductDetailPage() {
     })
   }
 
+  function incrementFlavor(flavorId) {
+    if (totalQuantity >= unitCount) return
+    setFlavorQuantities((prev) => ({
+      ...prev,
+      [flavorId]: (prev[flavorId] || 0) + 1,
+    }))
+  }
+
+  function decrementFlavor(flavorId) {
+    setFlavorQuantities((prev) => {
+      const current = prev[flavorId] || 0
+      if (current <= 0) return prev
+      const next = { ...prev, [flavorId]: current - 1 }
+      if (next[flavorId] === 0) delete next[flavorId]
+      return next
+    })
+  }
+
   function toggleExtra(extra) {
     setSelectedExtras((prev) =>
       prev.some((e) => e.id === extra.id)
@@ -84,12 +112,21 @@ export default function ProductDetailPage() {
     )
   }
 
-  const flavorsComplete =
-    !product?.hasFlavors || (maxFlavors > 0 && selectedFlavors.length >= 1)
+  const flavorsComplete = isQuantityMode
+    ? totalQuantity === unitCount
+    : !product?.hasFlavors || (maxFlavors > 0 && selectedFlavors.length >= 1)
 
   function handleAddToCart() {
     if (!selectedFormat || !flavorsComplete) return
-    addItem(product, selectedFormat, selectedExtras, comment, selectedFlavors)
+
+    let flavorsForCart = selectedFlavors
+    if (isQuantityMode) {
+      flavorsForCart = allFlavors
+        .filter((f) => flavorQuantities[f.id] > 0)
+        .map((f) => ({ id: f.id, name: f.name, quantity: flavorQuantities[f.id] }))
+    }
+
+    addItem(product, selectedFormat, selectedExtras, comment, flavorsForCart)
     setAdded(true)
     setTimeout(() => navigate('/menu'), 800)
   }
@@ -148,9 +185,14 @@ export default function ProductDetailPage() {
                 >
                   <span>
                     {fmt.name}
-                    {fmt.maxFlavors && (
+                    {fmt.maxFlavors > 0 && (
                       <span className="ml-2 text-xs opacity-70">
                         ({fmt.maxFlavors} {fmt.maxFlavors === 1 ? 'sabor' : 'sabores'})
+                      </span>
+                    )}
+                    {fmt.unitCount > 0 && (
+                      <span className="ml-2 text-xs opacity-70">
+                        ({fmt.unitCount} {fmt.unitCount === 1 ? 'unidad' : 'unidades'})
                       </span>
                     )}
                   </span>
@@ -162,8 +204,8 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Flavor selection */}
-          {product.hasFlavors && selectedFormat && (
+          {/* Flavor selection — toggle mode (ice cream, etc.) */}
+          {product.hasFlavors && !isQuantityMode && selectedFormat && (
             <div className="space-y-2">
               <Label>
                 Sabores{' '}
@@ -199,6 +241,76 @@ export default function ProductDetailPage() {
                       )}
                       {flavor.name}
                     </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Flavor selection — quantity mode (empanadas, etc.) */}
+          {product.hasFlavors && isQuantityMode && selectedFormat && (
+            <div className="space-y-2">
+              <Label>
+                Gustos{' '}
+                <span
+                  className={cn(
+                    'text-sm',
+                    totalQuantity === unitCount
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-gray-400 dark:text-gray-500',
+                  )}
+                >
+                  ({totalQuantity} de {unitCount})
+                </span>
+              </Label>
+              <div className="grid gap-2">
+                {allFlavors.map((flavor) => {
+                  const qty = flavorQuantities[flavor.id] || 0
+                  const atLimit = totalQuantity >= unitCount
+
+                  return (
+                    <div
+                      key={flavor.id}
+                      className={cn(
+                        'flex items-center justify-between rounded-md border px-4 py-3 text-sm transition-colors',
+                        qty > 0
+                          ? 'border-gray-900 bg-gray-50 dark:border-gray-100 dark:bg-gray-800'
+                          : 'border-gray-200 dark:border-gray-700',
+                      )}
+                    >
+                      <span className="font-medium">{flavor.name}</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={qty <= 0}
+                          className={cn(
+                            'flex h-7 w-7 items-center justify-center rounded-full border transition-colors',
+                            qty > 0
+                              ? 'border-gray-300 hover:border-gray-500 dark:border-gray-600 dark:hover:border-gray-400'
+                              : 'cursor-not-allowed border-gray-100 text-gray-300 dark:border-gray-800 dark:text-gray-600',
+                          )}
+                          onClick={() => decrementFlavor(flavor.id)}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </button>
+                        <span className="w-5 text-center font-medium">
+                          {qty}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={atLimit}
+                          className={cn(
+                            'flex h-7 w-7 items-center justify-center rounded-full border transition-colors',
+                            atLimit
+                              ? 'cursor-not-allowed border-gray-100 text-gray-300 dark:border-gray-800 dark:text-gray-600'
+                              : 'border-gray-300 hover:border-gray-500 dark:border-gray-600 dark:hover:border-gray-400',
+                          )}
+                          onClick={() => incrementFlavor(flavor.id)}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                      </div>
+                    </div>
                   )
                 })}
               </div>

@@ -22,6 +22,17 @@ export const mockFlavors = [
   { id: 'fl-tir', name: 'Tiramisú' },
 ]
 
+// ── Gustos de empanadas ────────────────────────────────
+
+export const mockEmpanadaFlavors = [
+  { id: 'emp-carne', name: 'Carne' },
+  { id: 'emp-pollo', name: 'Pollo' },
+  { id: 'emp-jyq', name: 'Jamón y queso' },
+  { id: 'emp-humita', name: 'Humita' },
+  { id: 'emp-caprese', name: 'Caprese' },
+  { id: 'emp-verdura', name: 'Verdura' },
+]
+
 // ── Catálogo ───────────────────────────────────────────
 // Flat product list — each item is a single SKU with one format.
 // The user sees everything at a glance without navigating categories.
@@ -29,6 +40,7 @@ export const mockFlavors = [
 export const mockCategories = [
   { id: 'helados', name: 'Helados', icon: '🍦' },
   { id: 'postres', name: 'Postres', icon: '🍨' },
+  { id: 'empanadas', name: 'Empanadas', icon: '🥟' },
   { id: 'bebidas', name: 'Bebidas', icon: '🥤' },
 ]
 
@@ -144,6 +156,34 @@ export const mockMenu = [
       { id: 'x-crema', name: 'Crema chantilly', price: 350 },
       { id: 'x-oreo', name: 'Oreo triturada', price: 400 },
     ],
+  },
+
+  // ── Empanadas ────────────────
+  {
+    id: 17,
+    name: 'Empanadas (docena)',
+    description: '12 empanadas caseras a elección de gustos',
+    category: 'empanadas',
+    image: '🥟',
+    available: true,
+    hasFlavors: true,
+    flavorMode: 'quantity',
+    flavorsSource: 'empanadas',
+    formats: [{ id: 'f-emp-doc', name: 'Docena (12 u.)', price: 9600, unitCount: 12 }],
+    extras: [],
+  },
+  {
+    id: 18,
+    name: 'Empanadas (media docena)',
+    description: '6 empanadas caseras a elección de gustos',
+    category: 'empanadas',
+    image: '🥟',
+    available: true,
+    hasFlavors: true,
+    flavorMode: 'quantity',
+    flavorsSource: 'empanadas',
+    formats: [{ id: 'f-emp-med', name: 'Media docena (6 u.)', price: 5400, unitCount: 6 }],
+    extras: [],
   },
 
   // ── Bebidas ──────────────────

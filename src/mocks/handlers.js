@@ -5,6 +5,7 @@ import {
   mockMenu,
   mockCategories,
   mockFlavors,
+  mockEmpanadaFlavors,
   mockAddresses,
   mockStoreLocation,
   mockMaxDeliveryKm,
@@ -83,8 +84,9 @@ export async function getCategories() {
   return [...mockCategories]
 }
 
-export async function getFlavors() {
+export async function getFlavors(source) {
   await delay()
+  if (source === 'empanadas') return [...mockEmpanadaFlavors]
   return [...mockFlavors]
 }
 
@@ -107,7 +109,13 @@ export async function createOrder(orderData) {
     format: typeof item.format === 'object' ? item.format.name : item.format,
     flavors:
       Array.isArray(item.flavors)
-        ? item.flavors.map((f) => (typeof f === 'object' ? f.name : f)).join(', ')
+        ? item.flavors
+            .map((f) => {
+              if (typeof f === 'object')
+                return f.quantity ? `${f.quantity} ${f.name}` : f.name
+              return f
+            })
+            .join(', ')
         : item.flavors || '',
     quantity: item.quantity,
     unitPrice: item.unitPrice,

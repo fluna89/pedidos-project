@@ -2,6 +2,19 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.10.0] - 2026-03-08
+
+### Implementado
+
+- **Empanadas en el menú**: docena ($9.600) y media docena ($5.400) con selección de gustos por cantidad
+- **Modo de selección por cantidad (`flavorMode: 'quantity'`)**: nuevo modo donde el usuario elige cuántas unidades de cada gusto quiere (ej: 4 Carne + 4 Pollo + 4 J&Q = 12), con controles +/- por gusto y contador de unidades restantes
+- **Gustos de empanadas**: Carne, Pollo, Jamón y queso, Humita, Caprese, Verdura
+- **Categoría Empanadas 🥟**: nueva categoría en el filtro del catálogo
+- **`getFlavors(source)` parametrizado**: el handler acepta source opcional para devolver la lista de gustos correcta según el producto
+- **Carrito muestra cantidades por gusto**: ej. "3 Carne, 3 Pollo, 6 Jamón y queso"
+
+---
+
 ## [0.9.1] - 2026-03-08
 
 ### Corregido

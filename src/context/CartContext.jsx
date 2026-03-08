@@ -31,7 +31,11 @@ export function CartProvider({ children }) {
       productId: product.id,
       name: product.name,
       format: { id: format.id, name: format.name, price: format.price },
-      flavors: flavors.map((f) => ({ id: f.id, name: f.name })),
+      flavors: flavors.map((f) => ({
+        id: f.id,
+        name: f.name,
+        ...(f.quantity && { quantity: f.quantity }),
+      })),
       extras: extras.map((e) => ({ id: e.id, name: e.name, price: e.price })),
       comment,
       quantity: 1,
