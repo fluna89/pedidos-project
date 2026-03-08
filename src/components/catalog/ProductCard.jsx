@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 export default function ProductCard({ product }) {
-  const minPrice = Math.min(...product.formats.map((f) => f.price))
+  const price = product.formats[0]?.price ?? 0
 
   return (
     <Card className="flex flex-col overflow-hidden">
@@ -18,7 +18,7 @@ export default function ProductCard({ product }) {
         </p>
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">
-            {product.formats.length > 1 ? 'Desde ' : ''}${minPrice.toLocaleString('es-AR')}
+            ${price.toLocaleString('es-AR')}
           </span>
           <Link to={`/menu/${product.id}`}>
             <Button size="sm">Elegir</Button>

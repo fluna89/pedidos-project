@@ -2,6 +2,21 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.9.0] - 2026-03-08
+
+### Implementado
+
+- **Catálogo plano**: cada producto es un SKU individual visible de un vistazo, sin navegar categorías
+- **Helados por kilo**: separados en 3 productos (1 kg, 1/2 kg, 1/4 kg) con sabores y extras
+- **Bebidas individuales**: Coca-Cola, Sprite, Fanta, Agua sin gas, Agua con gas (en lugar de "Gaseosa")
+- **Milkshakes**: mediano y grande como productos separados
+- **Tortas**: cada tamaño como producto independiente (clásica 6/12 porc., brownie 6/12 porc.)
+- **Cucurucho eliminado**: no apto para delivery
+- **CatalogPage simplificado**: sin filtro de categorías, grilla directa de productos
+- **ProductCard**: precio directo (sin "Desde")
+
+---
+
 ## [0.8.10] - 2026-03-05
 
 ### Mejorado

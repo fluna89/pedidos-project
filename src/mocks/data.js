@@ -23,29 +23,22 @@ export const mockFlavors = [
 ]
 
 // ── Catálogo ───────────────────────────────────────────
+// Flat product list — each item is a single SKU with one format.
+// The user sees everything at a glance without navigating categories.
 
-export const mockCategories = [
-  { id: 'helados', name: 'Helados', icon: '🍦' },
-  { id: 'postres', name: 'Postres', icon: '🍨' },
-  { id: 'tortas', name: 'Tortas heladas', icon: '🎂' },
-  { id: 'bebidas', name: 'Bebidas', icon: '🥤' },
-]
+export const mockCategories = [] // kept for API compat, not used in UI
 
 export const mockMenu = [
-  // ── Helados ──────────────────
+  // ── Helados por kilo ─────────
   {
     id: 1,
-    name: 'Helado por kilo',
-    description: 'Nuestro helado artesanal elaborado con ingredientes naturales',
+    name: 'Helado 1 kg',
+    description: '5 sabores a elección — nuestro helado artesanal',
     category: 'helados',
     image: '🍦',
     available: true,
     hasFlavors: true,
-    formats: [
-      { id: 'f1-14', name: '1/4 kg', price: 3500, maxFlavors: 2 },
-      { id: 'f1-12', name: '1/2 kg', price: 5500, maxFlavors: 3 },
-      { id: 'f1-1', name: '1 kg', price: 9000, maxFlavors: 5 },
-    ],
+    formats: [{ id: 'f-1kg', name: '1 kg', price: 9000, maxFlavors: 5 }],
     extras: [
       { id: 'x-salsa-choc', name: 'Salsa de chocolate', price: 300 },
       { id: 'x-salsa-ddl', name: 'Salsa de dulce de leche', price: 300 },
@@ -55,41 +48,34 @@ export const mockMenu = [
   },
   {
     id: 2,
-    name: 'Cucurucho',
-    description: 'Cono de waffle crocante con las bochas que elijas',
+    name: 'Helado 1/2 kg',
+    description: '3 sabores a elección — nuestro helado artesanal',
     category: 'helados',
     image: '🍦',
     available: true,
     hasFlavors: true,
-    formats: [
-      { id: 'f2-1', name: '1 bocha', price: 2000, maxFlavors: 1 },
-      { id: 'f2-2', name: '2 bochas', price: 3200, maxFlavors: 2 },
-      { id: 'f2-3', name: '3 bochas', price: 4200, maxFlavors: 3 },
-    ],
-    extras: [
-      { id: 'x-bano-choc', name: 'Baño de chocolate', price: 500 },
-      { id: 'x-grana', name: 'Granas de colores', price: 200 },
-      { id: 'x-crema', name: 'Crema chantilly', price: 350 },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Vasito',
-    description: 'Helado servido en vaso con cuchara',
-    category: 'helados',
-    image: '🍨',
-    available: true,
-    hasFlavors: true,
-    formats: [
-      { id: 'f3-1', name: '1 bocha', price: 1800, maxFlavors: 1 },
-      { id: 'f3-2', name: '2 bochas', price: 2900, maxFlavors: 2 },
-      { id: 'f3-3', name: '3 bochas', price: 3800, maxFlavors: 3 },
-    ],
+    formats: [{ id: 'f-12kg', name: '1/2 kg', price: 5500, maxFlavors: 3 }],
     extras: [
       { id: 'x-salsa-choc', name: 'Salsa de chocolate', price: 300 },
       { id: 'x-salsa-ddl', name: 'Salsa de dulce de leche', price: 300 },
       { id: 'x-crema', name: 'Crema chantilly', price: 350 },
-      { id: 'x-grana', name: 'Granas de colores', price: 200 },
+      { id: 'x-granola', name: 'Granola', price: 400 },
+    ],
+  },
+  {
+    id: 3,
+    name: 'Helado 1/4 kg',
+    description: '2 sabores a elección — nuestro helado artesanal',
+    category: 'helados',
+    image: '🍦',
+    available: true,
+    hasFlavors: true,
+    formats: [{ id: 'f-14kg', name: '1/4 kg', price: 3500, maxFlavors: 2 }],
+    extras: [
+      { id: 'x-salsa-choc', name: 'Salsa de chocolate', price: 300 },
+      { id: 'x-salsa-ddl', name: 'Salsa de dulce de leche', price: 300 },
+      { id: 'x-crema', name: 'Crema chantilly', price: 350 },
+      { id: 'x-granola', name: 'Granola', price: 400 },
     ],
   },
 
@@ -97,15 +83,12 @@ export const mockMenu = [
   {
     id: 4,
     name: 'Sundae clásico',
-    description: 'Helado con salsa, crema y topping crocante',
+    description: 'Helado con salsa, crema y topping crocante (2 sabores)',
     category: 'postres',
     image: '🍨',
     available: true,
     hasFlavors: true,
-    formats: [
-      { id: 'f4-chico', name: 'Chico (2 bochas)', price: 3800, maxFlavors: 2 },
-      { id: 'f4-grande', name: 'Grande (3 bochas)', price: 5200, maxFlavors: 3 },
-    ],
+    formats: [{ id: 'f-sundae', name: 'Sundae', price: 3800, maxFlavors: 2 }],
     extras: [
       { id: 'x-brownie', name: 'Brownie', price: 600 },
       { id: 'x-salsa-fru', name: 'Salsa de frutilla', price: 300 },
@@ -121,45 +104,39 @@ export const mockMenu = [
     image: '🍌',
     available: true,
     hasFlavors: true,
-    formats: [
-      { id: 'f5-clasico', name: 'Clásico', price: 5800, maxFlavors: 3 },
-    ],
+    formats: [{ id: 'f-bsplit', name: 'Clásico', price: 5800, maxFlavors: 3 }],
     extras: [
       { id: 'x-brownie', name: 'Brownie', price: 600 },
       { id: 'x-nueces', name: 'Nueces', price: 450 },
       { id: 'x-salsa-choc', name: 'Salsa extra de chocolate', price: 300 },
     ],
   },
-  {
-    id: 6,
-    name: 'Copa de frutas',
-    description: 'Helado con frutas frescas de estación',
-    category: 'postres',
-    image: '🍓',
-    available: false,
-    hasFlavors: true,
-    formats: [
-      { id: 'f6-copa', name: 'Copa', price: 4500, maxFlavors: 2 },
-    ],
-    extras: [
-      { id: 'x-granola', name: 'Granola', price: 400 },
-      { id: 'x-miel', name: 'Miel', price: 250 },
-    ],
-  },
 
   // ── Tortas heladas ───────────
   {
-    id: 7,
-    name: 'Torta helada clásica',
+    id: 6,
+    name: 'Torta helada clásica (6 porc.)',
     description: 'Base de bizcochuelo, capas de helado y merengue',
     category: 'tortas',
     image: '🎂',
     available: true,
     hasFlavors: true,
-    formats: [
-      { id: 'f7-chica', name: 'Chica (6 porc.)', price: 12000, maxFlavors: 2 },
-      { id: 'f7-grande', name: 'Grande (12 porc.)', price: 20000, maxFlavors: 3 },
+    formats: [{ id: 'f-torta-ch', name: 'Chica (6 porc.)', price: 12000, maxFlavors: 2 }],
+    extras: [
+      { id: 'x-merengue', name: 'Merengue italiano', price: 800 },
+      { id: 'x-salsa-choc', name: 'Cobertura de chocolate', price: 600 },
+      { id: 'x-deco', name: 'Decoración personalizada', price: 1000 },
     ],
+  },
+  {
+    id: 7,
+    name: 'Torta helada clásica (12 porc.)',
+    description: 'Base de bizcochuelo, capas de helado y merengue',
+    category: 'tortas',
+    image: '🎂',
+    available: true,
+    hasFlavors: true,
+    formats: [{ id: 'f-torta-gr', name: 'Grande (12 porc.)', price: 20000, maxFlavors: 3 }],
     extras: [
       { id: 'x-merengue', name: 'Merengue italiano', price: 800 },
       { id: 'x-salsa-choc', name: 'Cobertura de chocolate', price: 600 },
@@ -168,63 +145,117 @@ export const mockMenu = [
   },
   {
     id: 8,
-    name: 'Torta brownie helada',
+    name: 'Torta brownie helada (6 porc.)',
     description: 'Base de brownie húmedo con helado y ganache',
     category: 'tortas',
     image: '🍫',
     available: true,
     hasFlavors: true,
-    formats: [
-      { id: 'f8-chica', name: 'Chica (6 porc.)', price: 14000, maxFlavors: 2 },
-      { id: 'f8-grande', name: 'Grande (12 porc.)', price: 24000, maxFlavors: 3 },
+    formats: [{ id: 'f-tbrownie-ch', name: 'Chica (6 porc.)', price: 14000, maxFlavors: 2 }],
+    extras: [
+      { id: 'x-nueces', name: 'Nueces', price: 600 },
+      { id: 'x-deco', name: 'Decoración personalizada', price: 1000 },
     ],
+  },
+  {
+    id: 9,
+    name: 'Torta brownie helada (12 porc.)',
+    description: 'Base de brownie húmedo con helado y ganache',
+    category: 'tortas',
+    image: '🍫',
+    available: true,
+    hasFlavors: true,
+    formats: [{ id: 'f-tbrownie-gr', name: 'Grande (12 porc.)', price: 24000, maxFlavors: 3 }],
     extras: [
       { id: 'x-nueces', name: 'Nueces', price: 600 },
       { id: 'x-deco', name: 'Decoración personalizada', price: 1000 },
     ],
   },
 
-  // ── Bebidas ──────────────────
+  // ── Milkshakes ───────────────
   {
-    id: 9,
-    name: 'Milkshake',
-    description: 'Batido cremoso con helado artesanal',
+    id: 10,
+    name: 'Milkshake mediano',
+    description: 'Batido cremoso con helado artesanal (350ml, 1 sabor)',
     category: 'bebidas',
     image: '🥤',
     available: true,
     hasFlavors: true,
-    formats: [
-      { id: 'f9-med', name: 'Mediano (350ml)', price: 3200, maxFlavors: 1 },
-      { id: 'f9-grande', name: 'Grande (500ml)', price: 4200, maxFlavors: 2 },
-    ],
+    formats: [{ id: 'f-milk-m', name: 'Mediano (350ml)', price: 3200, maxFlavors: 1 }],
     extras: [
       { id: 'x-crema', name: 'Crema chantilly', price: 350 },
       { id: 'x-oreo', name: 'Oreo triturada', price: 400 },
     ],
   },
   {
-    id: 10,
-    name: 'Agua mineral',
-    description: 'Con o sin gas',
-    category: 'bebidas',
-    image: '💧',
-    available: true,
-    hasFlavors: false,
-    formats: [{ id: 'f10-500', name: '500ml', price: 600 }],
-    extras: [],
-  },
-  {
     id: 11,
-    name: 'Gaseosa',
-    description: 'Coca-Cola, Sprite o Fanta',
+    name: 'Milkshake grande',
+    description: 'Batido cremoso con helado artesanal (500ml, 2 sabores)',
+    category: 'bebidas',
+    image: '🥤',
+    available: true,
+    hasFlavors: true,
+    formats: [{ id: 'f-milk-g', name: 'Grande (500ml)', price: 4200, maxFlavors: 2 }],
+    extras: [
+      { id: 'x-crema', name: 'Crema chantilly', price: 350 },
+      { id: 'x-oreo', name: 'Oreo triturada', price: 400 },
+    ],
+  },
+
+  // ── Bebidas ──────────────────
+  {
+    id: 12,
+    name: 'Coca-Cola',
+    description: 'Lata 354 ml',
     category: 'bebidas',
     image: '🥤',
     available: true,
     hasFlavors: false,
-    formats: [
-      { id: 'f11-lata', name: 'Lata 354ml', price: 800 },
-      { id: 'f11-500', name: 'Botella 500ml', price: 1100 },
-    ],
+    formats: [{ id: 'f-coca', name: 'Lata 354ml', price: 800 }],
+    extras: [],
+  },
+  {
+    id: 13,
+    name: 'Sprite',
+    description: 'Lata 354 ml',
+    category: 'bebidas',
+    image: '🥤',
+    available: true,
+    hasFlavors: false,
+    formats: [{ id: 'f-sprite', name: 'Lata 354ml', price: 800 }],
+    extras: [],
+  },
+  {
+    id: 14,
+    name: 'Fanta',
+    description: 'Lata 354 ml',
+    category: 'bebidas',
+    image: '🥤',
+    available: true,
+    hasFlavors: false,
+    formats: [{ id: 'f-fanta', name: 'Lata 354ml', price: 800 }],
+    extras: [],
+  },
+  {
+    id: 15,
+    name: 'Agua mineral sin gas',
+    description: 'Botella 500 ml',
+    category: 'bebidas',
+    image: '💧',
+    available: true,
+    hasFlavors: false,
+    formats: [{ id: 'f-agua-sg', name: '500ml', price: 600 }],
+    extras: [],
+  },
+  {
+    id: 16,
+    name: 'Agua mineral con gas',
+    description: 'Botella 500 ml',
+    category: 'bebidas',
+    image: '💧',
+    available: true,
+    hasFlavors: false,
+    formats: [{ id: 'f-agua-cg', name: '500ml', price: 600 }],
     extras: [],
   },
 ]
