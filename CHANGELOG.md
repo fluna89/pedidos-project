@@ -2,6 +2,16 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.10.3] - 2026-03-08
+
+### Mejorado
+
+- **Helados con selector de cantidad por sabor**: los helados, postres y milkshakes ahora usan el mismo selector +/- por sabor que las empanadas. Ej: Helado 1 kg → Dulce de leche ×3, Chocolate ×1, Frutilla ×1
+- **`flavorMode: 'quantity'` en todos los productos con sabor**: helados (1kg/1/2kg/1/4kg), sundae, banana split, milkshakes mediano y grande
+- **Label diferenciado**: "Sabores" para helados/postres/bebidas, "Gustos" para empanadas
+
+---
+
 ## [0.10.2] - 2026-03-08
 
 ### Mejorado

@@ -282,7 +282,7 @@ export default function ProductDetailPage() {
           {product.hasFlavors && isQuantityMode && !hasFlavorPrices && selectedFormat && (
             <div className="space-y-2">
               <Label>
-                Gustos{' '}
+                Sabores{' '}
                 <span
                   className={cn(
                     'text-sm',
