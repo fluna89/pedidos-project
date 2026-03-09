@@ -33,17 +33,6 @@ export const mockEmpanadaFlavors = [
   { id: 'emp-verdura', name: 'Verdura', price: 750, image: '🥬' },
 ]
 
-// ── Gustos de pizza ────────────────────────────────────
-
-export const mockPizzaFlavors = [
-  { id: 'pz-muzza', name: 'Muzzarella', image: '🧀' },
-  { id: 'pz-napo', name: 'Napolitana', image: '🍅' },
-  { id: 'pz-fuga', name: 'Fugazzeta', image: '🧅' },
-  { id: 'pz-jym', name: 'Jamón y morrones', image: '🫑' },
-  { id: 'pz-cala', name: 'Calabresa', image: '🌶️' },
-  { id: 'pz-roq', name: 'Roquefort', image: '🧈' },
-]
-
 // ── Opciones de gaseosa (para combos) ──────────────────
 
 export const mockGaseosaFlavors = [
@@ -205,14 +194,34 @@ export const mockMenu = [
   {
     id: 22,
     name: 'Pizza muzzarella',
-    description: 'Pizza casera recién salida del horno — elegí tu gusto',
+    description: 'Clásica pizza de muzzarella, recién salida del horno',
     category: 'pizzas',
     image: '🍕',
     available: true,
-    hasFlavors: true,
-    flavorMode: 'quantity',
-    flavorsSource: 'pizzas',
-    formats: [{ id: 'f-pizza', name: 'Pizza entera', price: 5500, unitCount: 1 }],
+    hasFlavors: false,
+    formats: [{ id: 'f-pizza-muzza', name: 'Pizza entera', price: 5500 }],
+    extras: [],
+  },
+  {
+    id: 24,
+    name: 'Pizza napolitana',
+    description: 'Pizza con tomate, muzzarella y ajo',
+    category: 'pizzas',
+    image: '🍕',
+    available: true,
+    hasFlavors: false,
+    formats: [{ id: 'f-pizza-napo', name: 'Pizza entera', price: 5800 }],
+    extras: [],
+  },
+  {
+    id: 25,
+    name: 'Pizza fugazzeta',
+    description: 'Pizza rellena de muzzarella y cebolla',
+    category: 'pizzas',
+    image: '🍕',
+    available: true,
+    hasFlavors: false,
+    formats: [{ id: 'f-pizza-fuga', name: 'Pizza entera', price: 6000 }],
     extras: [],
   },
   // ── Combos ──────────────────────
@@ -249,17 +258,16 @@ export const mockMenu = [
   },
   {
     id: 23,
-    name: 'Combo Pizza + Gaseosa',
-    description: 'Pizza a elección + gaseosa — ¡el mejor precio!',
+    name: 'Combo Pizza + 2 Gaseosas',
+    description: 'Pizza muzzarella + 2 latas de gaseosa a elección',
     category: 'combos',
     image: '🎁',
     available: true,
     isCombo: true,
     hasFlavors: false,
-    formats: [{ id: 'f-combo-pizza-gas', name: 'Combo Pizza + Gaseosa', price: 5800 }],
+    formats: [{ id: 'f-combo-pizza-gas', name: 'Combo Pizza + 2 Gaseosas', price: 6500 }],
     comboItems: [
-      { label: 'Pizza', flavorsSource: 'pizzas', unitCount: 1 },
-      { label: 'Gaseosa', flavorsSource: 'gaseosas', unitCount: 1 },
+      { label: 'Gaseosa (2 latas)', flavorsSource: 'gaseosas', unitCount: 2 },
     ],
     extras: [],
   },

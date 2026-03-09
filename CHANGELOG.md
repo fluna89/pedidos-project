@@ -2,6 +2,14 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.11.3] - 2026-03-08
+
+### Cambiado
+
+- **Pizzas individuales**: cada pizza es un producto propio sin selección de gustos — Muzzarella ($5.500), Napolitana ($5.800), Fugazzeta ($6.000)
+- **Combo Pizza + 2 Gaseosas** ($6.500): pizza muzzarella + 2 latas de gaseosa a elección
+- Eliminado `mockPizzaFlavors` (ya no se necesita)
+
 ## [0.11.2] - 2026-03-08
 
 ### Implementado

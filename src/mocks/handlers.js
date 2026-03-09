@@ -6,7 +6,6 @@ import {
   mockCategories,
   mockFlavors,
   mockEmpanadaFlavors,
-  mockPizzaFlavors,
   mockGaseosaFlavors,
   mockAddresses,
   mockStoreLocation,
@@ -89,7 +88,6 @@ export async function getCategories() {
 export async function getFlavors(source) {
   await delay()
   if (source === 'empanadas') return [...mockEmpanadaFlavors]
-  if (source === 'pizzas') return [...mockPizzaFlavors]
   if (source === 'gaseosas') return [...mockGaseosaFlavors]
   return [...mockFlavors]
 }
