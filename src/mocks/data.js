@@ -25,12 +25,12 @@ export const mockFlavors = [
 // ── Gustos de empanadas ────────────────────────────────
 
 export const mockEmpanadaFlavors = [
-  { id: 'emp-carne', name: 'Carne' },
-  { id: 'emp-pollo', name: 'Pollo' },
-  { id: 'emp-jyq', name: 'Jamón y queso' },
-  { id: 'emp-humita', name: 'Humita' },
-  { id: 'emp-caprese', name: 'Caprese' },
-  { id: 'emp-verdura', name: 'Verdura' },
+  { id: 'emp-carne', name: 'Carne', price: 900, image: '🥩' },
+  { id: 'emp-pollo', name: 'Pollo', price: 850, image: '🍗' },
+  { id: 'emp-jyq', name: 'Jamón y queso', price: 800, image: '🧀' },
+  { id: 'emp-humita', name: 'Humita', price: 800, image: '🌽' },
+  { id: 'emp-caprese', name: 'Caprese', price: 850, image: '🍅' },
+  { id: 'emp-verdura', name: 'Verdura', price: 750, image: '🥬' },
 ]
 
 // ── Catálogo ───────────────────────────────────────────
@@ -170,7 +170,7 @@ export const mockMenu = [
     flavorMode: 'quantity',
     flavorsSource: 'empanadas',
     unitPricing: true,
-    formats: [{ id: 'f-emp', name: 'Empanada', price: 800 }],
+    formats: [{ id: 'f-emp', name: 'Empanadas', price: 0 }],
     extras: [],
   },
 

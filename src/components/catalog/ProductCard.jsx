@@ -18,7 +18,9 @@ export default function ProductCard({ product }) {
         </p>
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">
-            ${price.toLocaleString('es-AR')}
+            {product.unitPricing
+              ? 'Armá tu pedido'
+              : `$${price.toLocaleString('es-AR')}`}
           </span>
           <Link to={`/menu/${product.id}`}>
             <Button size="sm">Elegir</Button>

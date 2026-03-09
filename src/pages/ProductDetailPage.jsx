@@ -27,13 +27,13 @@ export default function ProductDetailPage() {
   const [selectedFormat, setSelectedFormat] = useState(null)
   const [selectedFlavors, setSelectedFlavors] = useState([])
   const [flavorQuantities, setFlavorQuantities] = useState({})
-  const [selectedUnitCount, setSelectedUnitCount] = useState(1)
   const [selectedExtras, setSelectedExtras] = useState([])
   const [comment, setComment] = useState('')
   const [added, setAdded] = useState(false)
 
   const isQuantityMode = product?.flavorMode === 'quantity'
   const isUnitPricing = product?.unitPricing === true
+  const hasFlavorPrices = allFlavors.length > 0 && allFlavors[0].price != null
 
   useEffect(() => {
     let cancelled = false
@@ -61,11 +61,19 @@ export default function ProductDetailPage() {
   }, [id, navigate])
 
   const maxFlavors = selectedFormat?.maxFlavors ?? 0
-  const unitCount = isUnitPricing ? selectedUnitCount : (selectedFormat?.unitCount ?? 0)
+  const unitCount = selectedFormat?.unitCount ?? 0
   const totalQuantity = Object.values(flavorQuantities).reduce(
     (sum, q) => sum + q,
     0,
   )
+
+  // Compute total from per-flavor prices when applicable
+  const flavorTotal = hasFlavorPrices
+    ? Object.entries(flavorQuantities).reduce((sum, [flavorId, qty]) => {
+        const flavor = allFlavors.find((f) => f.id === flavorId)
+        return sum + (flavor?.price ?? 0) * qty
+      }, 0)
+    : 0
 
   // Reset flavors when format changes and new limit is smaller
   function handleFormatSelect(fmt) {
@@ -79,28 +87,6 @@ export default function ProductDetailPage() {
     }
   }
 
-  function handleUnitCountChange(delta) {
-    setSelectedUnitCount((prev) => {
-      const next = prev + delta
-      if (next < 1) return prev
-      return next
-    })
-    // Trim flavor quantities if total exceeds new count
-    setFlavorQuantities((prev) => {
-      const newMax = selectedUnitCount + delta
-      if (newMax < 1) return prev
-      let remaining = newMax
-      const trimmed = {}
-      for (const [key, val] of Object.entries(prev)) {
-        if (remaining <= 0) break
-        const take = Math.min(val, remaining)
-        trimmed[key] = take
-        remaining -= take
-      }
-      return trimmed
-    })
-  }
-
   function toggleFlavor(flavor) {
     setSelectedFlavors((prev) => {
       const exists = prev.some((f) => f.id === flavor.id)
@@ -111,7 +97,8 @@ export default function ProductDetailPage() {
   }
 
   function incrementFlavor(flavorId) {
-    if (totalQuantity >= unitCount) return
+    // For priced flavors there is no upper limit; for fixed-count products respect unitCount
+    if (!hasFlavorPrices && unitCount > 0 && totalQuantity >= unitCount) return
     setFlavorQuantities((prev) => ({
       ...prev,
       [flavorId]: (prev[flavorId] || 0) + 1,
@@ -137,7 +124,9 @@ export default function ProductDetailPage() {
   }
 
   const flavorsComplete = isQuantityMode
-    ? totalQuantity === unitCount && unitCount >= 1
+    ? hasFlavorPrices
+      ? totalQuantity >= 1
+      : unitCount > 0 && totalQuantity === unitCount
     : !product?.hasFlavors || (maxFlavors > 0 && selectedFlavors.length >= 1)
 
   function handleAddToCart() {
@@ -149,15 +138,20 @@ export default function ProductDetailPage() {
     if (isQuantityMode) {
       flavorsForCart = allFlavors
         .filter((f) => flavorQuantities[f.id] > 0)
-        .map((f) => ({ id: f.id, name: f.name, quantity: flavorQuantities[f.id] }))
+        .map((f) => ({
+          id: f.id,
+          name: f.name,
+          quantity: flavorQuantities[f.id],
+          ...(f.price != null && { price: f.price }),
+        }))
     }
 
-    // For unit-priced products, build a virtual format with computed total
-    if (isUnitPricing) {
+    // For priced-flavor products, build a virtual format with computed total
+    if (isUnitPricing && hasFlavorPrices) {
       formatForCart = {
         ...selectedFormat,
-        name: `${selectedUnitCount} ${selectedUnitCount === 1 ? 'unidad' : 'unidades'}`,
-        price: selectedUnitCount * selectedFormat.price,
+        name: `${totalQuantity} ${totalQuantity === 1 ? 'unidad' : 'unidades'}`,
+        price: flavorTotal,
       }
     }
 
@@ -167,7 +161,7 @@ export default function ProductDetailPage() {
   }
 
   const totalPrice = selectedFormat
-    ? (isUnitPricing ? selectedUnitCount * selectedFormat.price : selectedFormat.price) +
+    ? (hasFlavorPrices ? flavorTotal : selectedFormat.price) +
       selectedExtras.reduce((sum, e) => sum + e.price, 0)
     : 0
 
@@ -241,41 +235,6 @@ export default function ProductDetailPage() {
           </div>
           )}
 
-          {/* Unit quantity picker (empanadas, etc.) */}
-          {isUnitPricing && selectedFormat && (
-            <div className="space-y-2">
-              <Label>Cantidad</Label>
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-9 w-9"
-                  disabled={selectedUnitCount <= 1}
-                  onClick={() => handleUnitCountChange(-1)}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="min-w-[3rem] text-center text-lg font-semibold">
-                  {selectedUnitCount}
-                </span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-9 w-9"
-                  onClick={() => handleUnitCountChange(1)}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  × ${selectedFormat.price.toLocaleString('es-AR')} c/u ={' '}
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
-                    ${(selectedUnitCount * selectedFormat.price).toLocaleString('es-AR')}
-                  </span>
-                </span>
-              </div>
-            </div>
-          )}
-
           {/* Flavor selection — toggle mode (ice cream, etc.) */}
           {product.hasFlavors && !isQuantityMode && selectedFormat && (
             <div className="space-y-2">
@@ -319,8 +278,8 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          {/* Flavor selection — quantity mode (empanadas, etc.) */}
-          {product.hasFlavors && isQuantityMode && selectedFormat && (
+          {/* Flavor selection — quantity mode without per-flavor pricing */}
+          {product.hasFlavors && isQuantityMode && !hasFlavorPrices && selectedFormat && (
             <div className="space-y-2">
               <Label>
                 Gustos{' '}
@@ -377,6 +336,77 @@ export default function ProductDetailPage() {
                               ? 'cursor-not-allowed border-gray-100 text-gray-300 dark:border-gray-800 dark:text-gray-600'
                               : 'border-gray-300 hover:border-gray-500 dark:border-gray-600 dark:hover:border-gray-400',
                           )}
+                          onClick={() => incrementFlavor(flavor.id)}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Flavor selection — quantity mode with per-flavor pricing (empanadas, etc.) */}
+          {product.hasFlavors && isQuantityMode && hasFlavorPrices && selectedFormat && (
+            <div className="space-y-2">
+              <Label>
+                Gustos{' '}
+                <span className="text-sm text-gray-400 dark:text-gray-500">
+                  ({totalQuantity} {totalQuantity === 1 ? 'seleccionada' : 'seleccionadas'})
+                </span>
+              </Label>
+              <div className="grid gap-2">
+                {allFlavors.map((flavor) => {
+                  const qty = flavorQuantities[flavor.id] || 0
+
+                  return (
+                    <div
+                      key={flavor.id}
+                      className={cn(
+                        'flex items-center gap-3 rounded-md border px-4 py-3 text-sm transition-colors',
+                        qty > 0
+                          ? 'border-gray-900 bg-gray-50 dark:border-gray-100 dark:bg-gray-800'
+                          : 'border-gray-200 dark:border-gray-700',
+                      )}
+                    >
+                      {/* Flavor image */}
+                      {flavor.image && (
+                        <span className="text-2xl leading-none">
+                          {flavor.image}
+                        </span>
+                      )}
+
+                      {/* Name + unit price */}
+                      <div className="min-w-0 flex-1">
+                        <span className="font-medium">{flavor.name}</span>
+                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                          ${flavor.price.toLocaleString('es-AR')} c/u
+                        </span>
+                      </div>
+
+                      {/* Quantity controls */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={qty <= 0}
+                          className={cn(
+                            'flex h-7 w-7 items-center justify-center rounded-full border transition-colors',
+                            qty > 0
+                              ? 'border-gray-300 hover:border-gray-500 dark:border-gray-600 dark:hover:border-gray-400'
+                              : 'cursor-not-allowed border-gray-100 text-gray-300 dark:border-gray-800 dark:text-gray-600',
+                          )}
+                          onClick={() => decrementFlavor(flavor.id)}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </button>
+                        <span className="w-5 text-center font-medium">
+                          {qty}
+                        </span>
+                        <button
+                          type="button"
+                          className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 transition-colors hover:border-gray-500 dark:border-gray-600 dark:hover:border-gray-400"
                           onClick={() => incrementFlavor(flavor.id)}
                         >
                           <Plus className="h-3 w-3" />

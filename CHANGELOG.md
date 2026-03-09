@@ -2,6 +2,19 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.10.2] - 2026-03-08
+
+### Mejorado
+
+- **Empanadas con precio por gusto**: cada gusto tiene su propio precio (Carne $900, Pollo $850, etc.) y emoji representativo
+- **Cantidad libre sin tope**: el usuario agrega +/- de cada gusto directamente, sin necesidad de elegir un total primero
+- **Precio dinámico**: el total se calcula en tiempo real como suma de (cantidad × precio unitario) de cada gusto seleccionado
+- **Filas con imagen**: cada gusto muestra su emoji, nombre, precio unitario y controles +/-
+- **ProductCard**: los productos con `unitPricing` muestran "Armá tu pedido" en lugar de $0
+- **Modo quantity sin pricing preservado**: los productos con `unitCount` fijo siguen funcionando igual
+
+---
+
 ## [0.10.1] - 2026-03-08
 
 ### Mejorado

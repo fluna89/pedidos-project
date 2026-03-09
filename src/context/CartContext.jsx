@@ -35,6 +35,7 @@ export function CartProvider({ children }) {
         id: f.id,
         name: f.name,
         ...(f.quantity && { quantity: f.quantity }),
+        ...(f.price != null && { price: f.price }),
       })),
       extras: extras.map((e) => ({ id: e.id, name: e.name, price: e.price })),
       comment,
