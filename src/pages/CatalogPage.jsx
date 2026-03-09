@@ -28,9 +28,16 @@ export default function CatalogPage() {
     }
   }, [])
 
+  // Combos always first, then the rest
+  const sorted = [...products].sort((a, b) => {
+    if (a.isCombo && !b.isCombo) return -1
+    if (!a.isCombo && b.isCombo) return 1
+    return 0
+  })
+
   const filtered = activeCategory
-    ? products.filter((p) => p.category === activeCategory)
-    : products
+    ? sorted.filter((p) => p.category === activeCategory)
+    : sorted
 
   if (loading) {
     return (

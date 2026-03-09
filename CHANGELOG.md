@@ -2,6 +2,13 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.11.1] - 2026-03-08
+
+### Mejorado
+
+- **Combos primero**: los combos siempre aparecen en las primeras posiciones del catálogo
+- **Destaque visual**: las cards de combos tienen borde ámbar, ring y badge "COMBO"
+
 ## [0.11.0] - 2026-03-08
 
 ### Implementado
