@@ -2,6 +2,12 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.12.1] - 2026-03-09
+
+### Corregido
+
+- **Redirección admin al login**: GuestRoute ahora redirige a `/admin` cuando el usuario es admin, evitando que el redirect a `/` gane la carrera con `navigate('/admin')`
+
 ## [0.12.0] - 2026-03-09
 
 ### Implementado — Panel Admin (Fase 1a)
