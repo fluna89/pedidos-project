@@ -504,6 +504,13 @@ export async function adminRevertOrder(orderId) {
   const order = orders.find((o) => o.id === orderId)
   if (!order) throw new Error('Pedido no encontrado')
 
+  // Revert from cancelled → restore to pendiente
+  if (order.status === 'cancelado') {
+    order.status = 'pendiente'
+    order.updatedAt = new Date().toISOString()
+    return { ...order }
+  }
+
   const flow = order.orderType === 'pickup'
     ? adminOrderFlow.filter((s) => s !== 'en_camino')
     : adminOrderFlow
@@ -530,4 +537,52 @@ export async function adminCancelOrder(orderId) {
 /** Get status labels for display. */
 export function getOrderStatusLabels() {
   return { ...orderStatusLabels }
+}
+
+// ── Mock: simulate new incoming order ─────────────────
+
+const mockCustomerNames = [
+  'Lucía Fernández', 'Martín Gómez', 'Valentina Pérez', 'Santiago Rodríguez',
+  'Camila Martínez', 'Facundo López', 'Sofía Díaz', 'Matías González',
+]
+const mockStreets = [
+  'Av. Corrientes 1500', 'Av. Rivadavia 4200', 'Tucumán 900', 'Maipú 350',
+  'Av. Córdoba 2800', 'Beruti 3100', 'Thames 1600', 'Av. Las Heras 1900',
+]
+const mockItemSets = [
+  [{ name: 'Helado 1/4 kg', format: '1/4 kg', flavors: 'Dulce de leche, Chocolate', quantity: 1, unitPrice: 3500 }],
+  [{ name: 'Pizza muzzarella', format: 'Pizza entera', flavors: '', quantity: 1, unitPrice: 5500 }, { name: 'Coca-Cola', format: 'Lata 354ml', flavors: '', quantity: 2, unitPrice: 800 }],
+  [{ name: 'Empanadas', format: 'Empanadas', flavors: '6 Carne, 6 Pollo', quantity: 1, unitPrice: 10600 }],
+  [{ name: 'Helado 1 kg', format: '1 kg', flavors: 'Frutilla, Limón, Sambayón, Tramontana', quantity: 1, unitPrice: 9000 }],
+  [{ name: 'Combo Pizza + 2 Gaseosas', format: 'Combo Pizza + 2 Gaseosas', flavors: 'Gaseosa: Coca-Cola, Sprite', quantity: 1, unitPrice: 6500 }],
+]
+
+let nextOrderId = 4000
+
+/** Simulate a new incoming order (admin mock). */
+export async function adminSimulateNewOrder() {
+  await delay()
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)]
+  const isPickup = Math.random() < 0.3
+  const items = pick(mockItemSets)
+  const subtotal = items.reduce((s, i) => s + i.unitPrice * i.quantity, 0)
+  const deliveryCost = isPickup ? 0 : [500, 800, 1200][Math.floor(Math.random() * 3)]
+  const newOrder = {
+    id: nextOrderId++,
+    userId: `guest-${200 + nextOrderId}`,
+    status: 'pendiente',
+    orderType: isPickup ? 'pickup' : 'delivery',
+    customerName: pick(mockCustomerNames),
+    items,
+    subtotal,
+    deliveryCost,
+    total: subtotal + deliveryCost,
+    paymentMethod: pick(['Mercado Pago', 'Efectivo', 'Transferencia bancaria', 'Tarjeta']),
+    paymentStatus: Math.random() < 0.5 ? 'pagado' : 'pendiente_pago',
+    address: isPickup ? null : { alias: 'Casa', street: pick(mockStreets) },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+  orders.unshift(newOrder)
+  return { ...newOrder }
 }

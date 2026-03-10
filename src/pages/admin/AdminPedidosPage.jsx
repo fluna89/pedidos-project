@@ -1,21 +1,56 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   adminGetAllOrders,
   adminAdvanceOrder,
   adminRevertOrder,
   adminCancelOrder,
+  adminSimulateNewOrder,
 } from '@/mocks/handlers'
 import { orderStatusLabels } from '@/mocks/data'
 import { Button } from '@/components/ui/button'
 import {
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
+  ChevronUp,
   X,
   RefreshCw,
   LayoutList,
   Columns3,
+  Ban,
+  Undo2,
+  Bell,
+  BellOff,
+  Plus,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+// ── Sound utility ──────────────────────────────────────
+
+function playNewOrderSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const playTone = (freq, start, dur) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.frequency.value = freq
+      osc.type = 'sine'
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + start)
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + start + dur)
+      osc.start(ctx.currentTime + start)
+      osc.stop(ctx.currentTime + start + dur)
+    }
+    playTone(880, 0, 0.15)
+    playTone(1100, 0.18, 0.15)
+    playTone(880, 0.36, 0.2)
+  } catch {
+    // Audio not available
+  }
+}
+
+const POLL_INTERVAL = 10_000 // 10 seconds
 
 const statusColors = {
   pendiente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
@@ -36,7 +71,7 @@ function StatusBadge({ status }) {
   return (
     <span
       className={cn(
-        'inline-block rounded-full px-2.5 py-0.5 text-xs font-medium',
+        'inline-block rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-tight',
         statusColors[status] || 'bg-gray-100 text-gray-600',
       )}
     >
@@ -58,78 +93,176 @@ function formatDate(isoString) {
 
 // ── Kanban Column ──────────────────────────────────────
 
-function KanbanColumn({ title, orders, onAdvance, onRevert, onCancel }) {
+const KANBAN_MAX_VISIBLE = 4
+
+function KanbanColumn({ title, orders, onAdvance, onRevert, onCancel, newOrderIds }) {
+  const [expanded, setExpanded] = useState(false)
+  const visibleOrders = expanded ? orders : orders.slice(0, KANBAN_MAX_VISIBLE)
+  const hasMore = orders.length > KANBAN_MAX_VISIBLE
+
   return (
-    <div className="flex min-w-[320px] flex-1 flex-col rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
-      <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
-        <h3 className="text-sm font-semibold">
+    <div className="flex min-w-[150px] flex-1 flex-col rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
+      <div className="border-b border-gray-200 px-2 py-2 dark:border-gray-700">
+        <h3 className="text-xs font-semibold">
           {title}{' '}
-          <span className="ml-1 text-xs font-normal text-gray-500">
+          <span className="ml-1 text-[10px] font-normal text-gray-500">
             ({orders.length})
           </span>
         </h3>
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto p-3">
+      <div className="flex-1 space-y-2 p-2">
         {orders.length === 0 && (
-          <p className="py-6 text-center text-xs text-gray-400">Sin pedidos</p>
+          <p className="py-4 text-center text-[10px] text-gray-400">Sin pedidos</p>
         )}
-        {orders.map((order) => (
+        {visibleOrders.map((order) => (
           <div
             key={order.id}
-            className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+            className={cn(
+              'rounded-md border border-gray-200 bg-white p-2 shadow-sm dark:border-gray-700 dark:bg-gray-800',
+              newOrderIds?.has(order.id) &&
+                'animate-pulse border-green-400 bg-green-50 ring-2 ring-green-400/50 dark:border-green-500 dark:bg-green-950/30',
+            )}
           >
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-bold">#{order.id}</span>
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-xs font-bold">#{order.id}</span>
               <StatusBadge status={order.status} />
             </div>
-            <p className="text-sm font-medium">{order.customerName || 'Invitado'}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="truncate text-xs font-medium">{order.customerName || 'Invitado'}</p>
+            <p className="truncate text-[10px] text-gray-500 dark:text-gray-400">
               {order.orderType === 'pickup' ? 'Retiro' : order.address?.street || 'Delivery'}
             </p>
-            <p className="mt-1 text-xs text-gray-500">{formatDate(order.createdAt)}</p>
-            <div className="mt-1 text-sm font-semibold">
-              ${order.total?.toLocaleString('es-AR')}
+            <div className="mt-1 flex items-center justify-between">
+              <span className="text-[10px] text-gray-500">{formatDate(order.createdAt)}</span>
+              <span className="text-xs font-semibold">${order.total?.toLocaleString('es-AR')}</span>
             </div>
-            <div className="mt-2 flex items-center gap-1">
+            <div className="mt-1 flex items-center gap-0.5">
               {order.status !== 'pendiente' &&
-                order.status !== 'cancelado' &&
-                order.status !== 'entregado' && (
+                order.status !== 'cancelado' && (
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7"
+                    className="h-6 w-6"
                     onClick={() => onRevert(order.id)}
                     title="Retroceder estado"
                   >
-                    <ChevronLeft className="h-3.5 w-3.5" />
+                    <ChevronLeft className="h-3 w-3" />
                   </Button>
                 )}
+              {order.status === 'entregado' && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-orange-500 hover:text-orange-600"
+                  onClick={() => onRevert(order.id)}
+                  title="Revertir entrega"
+                >
+                  <Undo2 className="h-3 w-3" />
+                </Button>
+              )}
               {order.status !== 'entregado' && order.status !== 'cancelado' && (
                 <>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7"
+                    className="h-6 w-6"
                     onClick={() => onAdvance(order.id)}
                     title="Avanzar estado"
                   >
-                    <ChevronRight className="h-3.5 w-3.5" />
+                    <ChevronRight className="h-3 w-3" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 text-red-500 hover:text-red-600"
+                    className="h-6 w-6 text-red-500 hover:text-red-600"
                     onClick={() => onCancel(order.id)}
                     title="Cancelar pedido"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <X className="h-3 w-3" />
                   </Button>
                 </>
               )}
             </div>
           </div>
         ))}
+        {hasMore && !expanded && (
+          <button
+            onClick={() => setExpanded(true)}
+            className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[10px] font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+          >
+            Ver más ({orders.length - KANBAN_MAX_VISIBLE})
+            <ChevronDown className="h-3 w-3" />
+          </button>
+        )}
+        {hasMore && expanded && (
+          <button
+            onClick={() => setExpanded(false)}
+            className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[10px] font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+          >
+            Ver menos
+            <ChevronUp className="h-3 w-3" />
+          </button>
+        )}
       </div>
+    </div>
+  )
+}
+
+// ── Cancelled Orders Section ───────────────────────────
+
+function CancelledSection({ orders, onRevert }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="rounded-lg border border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-950/20">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center gap-2 px-3 py-2 text-left"
+      >
+        <Ban className="h-3.5 w-3.5 text-red-500" />
+        <span className="text-xs font-semibold text-red-700 dark:text-red-400">
+          Cancelados ({orders.length})
+        </span>
+        {open ? (
+          <ChevronUp className="ml-auto h-3.5 w-3.5 text-red-400" />
+        ) : (
+          <ChevronDown className="ml-auto h-3.5 w-3.5 text-red-400" />
+        )}
+      </button>
+      {open && (
+        <div className="border-t border-red-200 px-3 py-2 dark:border-red-900/50">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="rounded-md border border-red-200 bg-white p-2 dark:border-red-900/30 dark:bg-gray-800"
+              >
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-xs font-bold">#{order.id}</span>
+                  <StatusBadge status={order.status} />
+                </div>
+                <p className="truncate text-xs font-medium">
+                  {order.customerName || 'Invitado'}
+                </p>
+                <div className="mt-1 flex items-center justify-between">
+                  <span className="text-[10px] text-gray-500">{formatDate(order.createdAt)}</span>
+                  <span className="text-xs font-semibold">
+                    ${order.total?.toLocaleString('es-AR')}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-1 h-6 w-full text-[10px] text-orange-600 hover:text-orange-700 dark:text-orange-400"
+                  onClick={() => onRevert(order.id)}
+                >
+                  <Undo2 className="mr-1 h-3 w-3" />
+                  Revertir
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -140,6 +273,9 @@ export default function AdminPedidosPage() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState('list') // 'list' | 'kanban'
+  const [muted, setMuted] = useState(false)
+  const [newOrderIds, setNewOrderIds] = useState(new Set())
+  const knownIdsRef = useRef(new Set())
 
   const loadOrders = useCallback(async () => {
     setLoading(true)
@@ -148,11 +284,13 @@ export default function AdminPedidosPage() {
     setLoading(false)
   }, [])
 
+  // Initial load
   useEffect(() => {
     let cancelled = false
     async function init() {
       const data = await adminGetAllOrders()
       if (!cancelled) {
+        knownIdsRef.current = new Set(data.map((o) => o.id))
         setOrders(data)
         setLoading(false)
       }
@@ -160,6 +298,59 @@ export default function AdminPedidosPage() {
     init()
     return () => { cancelled = true }
   }, [])
+
+  // Polling for new orders
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const data = await adminGetAllOrders()
+      const incoming = data.filter((o) => !knownIdsRef.current.has(o.id))
+      if (incoming.length > 0) {
+        const incomingIds = incoming.map((o) => o.id)
+        incomingIds.forEach((id) => knownIdsRef.current.add(id))
+        setNewOrderIds((prev) => {
+          const next = new Set(prev)
+          incomingIds.forEach((id) => next.add(id))
+          return next
+        })
+        if (!muted) playNewOrderSound()
+        // Auto-clear highlight after 8 seconds
+        setTimeout(() => {
+          setNewOrderIds((prev) => {
+            const next = new Set(prev)
+            incomingIds.forEach((id) => next.delete(id))
+            return next
+          })
+        }, 8000)
+      }
+      setOrders(data)
+    }, POLL_INTERVAL)
+    return () => clearInterval(interval)
+  }, [muted])
+
+  async function handleSimulateOrder() {
+    await adminSimulateNewOrder()
+    // Polling will pick it up, but also trigger an immediate fetch
+    const data = await adminGetAllOrders()
+    const incoming = data.filter((o) => !knownIdsRef.current.has(o.id))
+    if (incoming.length > 0) {
+      const incomingIds = incoming.map((o) => o.id)
+      incomingIds.forEach((id) => knownIdsRef.current.add(id))
+      setNewOrderIds((prev) => {
+        const next = new Set(prev)
+        incomingIds.forEach((id) => next.add(id))
+        return next
+      })
+      if (!muted) playNewOrderSound()
+      setTimeout(() => {
+        setNewOrderIds((prev) => {
+          const next = new Set(prev)
+          incomingIds.forEach((id) => next.delete(id))
+          return next
+        })
+      }, 8000)
+    }
+    setOrders(data)
+  }
 
   async function handleAdvance(orderId) {
     try {
@@ -201,17 +392,15 @@ export default function AdminPedidosPage() {
     )
   }
 
-  // Kanban groups
-  const entrantes = orders.filter((o) => o.status === 'pendiente')
-  const enProceso = orders.filter(
-    (o) => o.status === 'en_preparacion' || o.status === 'listo',
-  )
-  const finalizado = orders.filter(
-    (o) =>
-      o.status === 'en_camino' ||
-      o.status === 'entregado' ||
-      o.status === 'cancelado',
-  )
+  // Kanban columns — one per active status (cancelados shown separately)
+  const kanbanStatuses = [
+    'pendiente',
+    'en_preparacion',
+    'listo',
+    'en_camino',
+    'entregado',
+  ]
+  const cancelledOrders = orders.filter((o) => o.status === 'cancelado')
 
   return (
     <div className="space-y-4">
@@ -219,6 +408,24 @@ export default function AdminPedidosPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Pedidos</h1>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSimulateOrder}
+            title="Simular nuevo pedido (testing)"
+          >
+            <Plus className="mr-1 h-4 w-4" />
+            Simular
+          </Button>
+          <Button
+            variant={muted ? 'outline' : 'secondary'}
+            size="sm"
+            onClick={() => setMuted(!muted)}
+            title={muted ? 'Activar sonido' : 'Silenciar alertas'}
+          >
+            {muted ? <BellOff className="mr-1 h-4 w-4" /> : <Bell className="mr-1 h-4 w-4" />}
+            {muted ? 'Mute' : 'Sonido'}
+          </Button>
           <Button variant="outline" size="sm" onClick={loadOrders}>
             <RefreshCw className="mr-1 h-4 w-4" />
             Actualizar
@@ -248,29 +455,24 @@ export default function AdminPedidosPage() {
 
       {/* Kanban View */}
       {view === 'kanban' && (
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          <KanbanColumn
-            title="Entrantes"
-            orders={entrantes}
-            onAdvance={handleAdvance}
-            onRevert={handleRevert}
-            onCancel={handleCancel}
-          />
-          <KanbanColumn
-            title="En proceso"
-            orders={enProceso}
-            onAdvance={handleAdvance}
-            onRevert={handleRevert}
-            onCancel={handleCancel}
-          />
-          <KanbanColumn
-            title="Finalizados"
-            orders={finalizado}
-            onAdvance={handleAdvance}
-            onRevert={handleRevert}
-            onCancel={handleCancel}
-          />
-        </div>
+        <>
+          <div className="flex gap-2 overflow-x-auto pb-4">
+            {kanbanStatuses.map((status) => (
+              <KanbanColumn
+                key={status}
+                title={orderStatusLabels[status] || status}
+                orders={orders.filter((o) => o.status === status)}
+                onAdvance={handleAdvance}
+                onRevert={handleRevert}
+                onCancel={handleCancel}
+                newOrderIds={newOrderIds}
+              />
+            ))}
+          </div>
+          {cancelledOrders.length > 0 && (
+            <CancelledSection orders={cancelledOrders} onRevert={handleRevert} />
+          )}
+        </>
       )}
 
       {/* List View */}
@@ -298,6 +500,8 @@ export default function AdminPedidosPage() {
                     'bg-white dark:bg-gray-800',
                     order.status === 'pendiente' &&
                       'bg-yellow-50/50 dark:bg-yellow-900/10',
+                    newOrderIds.has(order.id) &&
+                      'animate-pulse bg-green-50 dark:bg-green-950/30',
                   )}
                 >
                   <td className="px-4 py-3 font-mono font-bold">#{order.id}</td>
@@ -343,8 +547,7 @@ export default function AdminPedidosPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-center gap-1">
                       {order.status !== 'pendiente' &&
-                        order.status !== 'cancelado' &&
-                        order.status !== 'entregado' && (
+                        order.status !== 'cancelado' && (
                           <Button
                             variant="ghost"
                             size="icon"
@@ -355,6 +558,17 @@ export default function AdminPedidosPage() {
                             <ChevronLeft className="h-4 w-4" />
                           </Button>
                         )}
+                      {(order.status === 'entregado' || order.status === 'cancelado') && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-orange-500 hover:text-orange-600"
+                          onClick={() => handleRevert(order.id)}
+                          title={order.status === 'cancelado' ? 'Revertir cancelación' : 'Revertir entrega'}
+                        >
+                          <Undo2 className="h-4 w-4" />
+                        </Button>
+                      )}
                       {order.status !== 'entregado' &&
                         order.status !== 'cancelado' && (
                           <>

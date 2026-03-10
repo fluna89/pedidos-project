@@ -2,6 +2,18 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.12.2] - 2026-03-10
+
+### Mejorado — Kanban y alertas de pedidos
+
+- **Kanban 1 col/estado**: 5 columnas individuales (Pendiente, En preparación, Listo, En camino, Entregado). Cancelados en sección colapsable aparte
+- **Cards compactas**: menor ancho mínimo (150px), texto reducido, layout más denso
+- **Ver más/menos**: las columnas muestran máx. 4 cards, con botón expandir/colapsar
+- **Revertir cancelación y entrega**: botón Undo en pedidos cancelados y entregados (tabla, kanban y sección cancelados)
+- **Alertas de nuevo pedido**: polling cada 10s, sonido audible (Web Audio API) y destaque visual (pulse verde) en cards/filas nuevas durante 8s
+- **Mute/Sonido**: toggle para silenciar alertas sonoras
+- **Simular pedido**: botón "Simular" para testing que genera pedidos aleatorios
+
 ## [0.12.1] - 2026-03-09
 
 ### Corregido
@@ -475,11 +487,11 @@ Registro de funcionalidades implementadas y planificadas.
 
 ### v1.0.0 — Fase 1: MVP Admin
 
-- [ ] Layout admin (sidebar + contenido) con autenticación de rol admin
-- [ ] **Pedidos — Listado**: tabla con ID, fecha, cliente, tipo entrega, medio de pago, importe, estado, repartidor, acciones
-- [ ] **Pedidos — Kanban**: 3 columnas (Entrantes / En proceso / Retirados)
-- [ ] **Pedidos — Alertas**: sonido y destaque visual al recibir pedido nuevo
-- [ ] **Pedidos — Acciones básicas**: avanzar/retroceder estado, cancelar
+- [x] Layout admin (sidebar + contenido) con autenticación de rol admin *(v0.12.0)*
+- [x] **Pedidos — Listado**: tabla con ID, fecha, cliente, tipo entrega, medio de pago, importe, estado, repartidor, acciones *(v0.12.0)*
+- [x] **Pedidos — Kanban**: 3 columnas (Entrantes / En proceso / Finalizados) *(v0.12.0)*
+- [ ] **Pedidos — Alertas**: sonido y destaque visual al recibir pedido nuevo *(v0.12.2 — parcial: polling, no real-time)*
+- [x] **Pedidos — Acciones básicas**: avanzar/retroceder estado, cancelar *(v0.12.0)*
 - [ ] **Productos**: CRUD con los 3 arquetipos (Simple, Slots Fijos, Porciones y Sabores)
 - [ ] **Sabores**: lista maestra global con toggle ON/OFF
 - [ ] **Configuración**: horarios de apertura, apagado de emergencia, mensaje de ausencia
