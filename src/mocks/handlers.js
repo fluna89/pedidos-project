@@ -524,12 +524,15 @@ export async function adminRevertOrder(orderId) {
 }
 
 /** Cancel an order (admin). */
-export async function adminCancelOrder(orderId) {
+/** Cancel an order (admin). Accepts reason and optional image. */
+export async function adminCancelOrder(orderId, { reason, imageUrl } = {}) {
   await delay()
   const order = orders.find((o) => o.id === orderId)
   if (!order) throw new Error('Pedido no encontrado')
   if (order.status === 'entregado') throw new Error('No se puede cancelar un pedido entregado')
   order.status = 'cancelado'
+  order.cancelReason = reason || ''
+  order.cancelImageUrl = imageUrl || null
   order.updatedAt = new Date().toISOString()
   return { ...order }
 }

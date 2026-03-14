@@ -2,6 +2,15 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.12.3] - 2026-03-14
+
+### Implementado — Cancelación con motivo e imagen
+
+- **Diálogo de cancelación**: al cancelar un pedido se abre un modal que solicita motivo obligatorio y permite adjuntar una imagen (opcional)
+- **Componente Dialog (shadcn/ui)**: nuevo componente `dialog.jsx` basado en Radix UI Dialog
+- **Datos de cancelación**: el pedido almacena `cancelReason` e `cancelImageUrl`
+- **Visualización**: las cards de pedidos cancelados muestran el motivo y la imagen adjunta
+
 ## [0.12.2] - 2026-03-10
 
 ### Mejorado — Kanban y alertas de pedidos
@@ -490,7 +499,7 @@ Registro de funcionalidades implementadas y planificadas.
 - [x] Layout admin (sidebar + contenido) con autenticación de rol admin *(v0.12.0)*
 - [x] **Pedidos — Listado**: tabla con ID, fecha, cliente, tipo entrega, medio de pago, importe, estado, repartidor, acciones *(v0.12.0)*
 - [x] **Pedidos — Kanban**: 3 columnas (Entrantes / En proceso / Finalizados) *(v0.12.0)*
-- [ ] **Pedidos — Alertas**: sonido y destaque visual al recibir pedido nuevo *(v0.12.2 — parcial: polling, no real-time)*
+- [x] **Pedidos — Alertas**: sonido y destaque visual al recibir pedido nuevo *(v0.12.2 — parcial: polling, no real-time)*
 - [x] **Pedidos — Acciones básicas**: avanzar/retroceder estado, cancelar *(v0.12.0)*
 - [ ] **Productos**: CRUD con los 3 arquetipos (Simple, Slots Fijos, Porciones y Sabores)
 - [ ] **Sabores**: lista maestra global con toggle ON/OFF

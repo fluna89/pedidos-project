@@ -9,6 +9,16 @@ import {
 import { orderStatusLabels } from '@/mocks/data'
 import { Button } from '@/components/ui/button'
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import {
   ChevronRight,
   ChevronLeft,
   ChevronDown,
@@ -22,6 +32,8 @@ import {
   Bell,
   BellOff,
   Plus,
+  ImagePlus,
+  FileText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -207,6 +219,108 @@ function KanbanColumn({ title, orders, onAdvance, onRevert, onCancel, newOrderId
   )
 }
 
+// ── Cancel Order Dialog ────────────────────────────────
+
+function CancelOrderDialog({ orderId, open, onOpenChange, onConfirm }) {
+  const [reason, setReason] = useState('')
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  function handleImageChange(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setImageFile(file)
+    const reader = new FileReader()
+    reader.onloadend = () => setImagePreview(reader.result)
+    reader.readAsDataURL(file)
+  }
+
+  function removeImage() {
+    setImageFile(null)
+    setImagePreview(null)
+  }
+
+  async function handleSubmit() {
+    if (!reason.trim()) return
+    setSubmitting(true)
+    // In a real app, imageFile would be uploaded to a server.
+    // For the mock we pass the data URL as imageUrl.
+    await onConfirm(orderId, { reason: reason.trim(), imageUrl: imagePreview })
+    setSubmitting(false)
+    setReason('')
+    setImageFile(null)
+    setImagePreview(null)
+    onOpenChange(false)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Cancelar pedido #{orderId}</DialogTitle>
+          <DialogDescription>
+            Indicá el motivo de la cancelación. Opcionalmente podés adjuntar una imagen.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="cancel-reason">Motivo</Label>
+            <Textarea
+              id="cancel-reason"
+              placeholder="Ej: Cliente solicitó cancelación, producto sin stock..."
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              rows={3}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Imagen (opcional)</Label>
+            {imagePreview ? (
+              <div className="relative">
+                <img
+                  src={imagePreview}
+                  alt="Adjunto"
+                  className="max-h-40 rounded-md border border-gray-200 object-contain dark:border-gray-700"
+                />
+                <button
+                  onClick={removeImage}
+                  className="absolute -right-2 -top-2 rounded-full bg-red-500 p-0.5 text-white hover:bg-red-600"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ) : (
+              <label className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 hover:border-gray-400 hover:text-gray-600 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500">
+                <ImagePlus className="h-4 w-4" />
+                Adjuntar imagen
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+              </label>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Volver
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleSubmit}
+            disabled={!reason.trim() || submitting}
+          >
+            {submitting ? 'Cancelando...' : 'Confirmar cancelación'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 // ── Cancelled Orders Section ───────────────────────────
 
 function CancelledSection({ orders, onRevert }) {
@@ -249,6 +363,19 @@ function CancelledSection({ orders, onRevert }) {
                     ${order.total?.toLocaleString('es-AR')}
                   </span>
                 </div>
+                {order.cancelReason && (
+                  <p className="mt-1 flex items-start gap-1 text-[10px] text-red-600 dark:text-red-400">
+                    <FileText className="mt-0.5 h-2.5 w-2.5 shrink-0" />
+                    <span className="line-clamp-2">{order.cancelReason}</span>
+                  </p>
+                )}
+                {order.cancelImageUrl && (
+                  <img
+                    src={order.cancelImageUrl}
+                    alt="Adjunto cancelación"
+                    className="mt-1 max-h-16 rounded border border-red-200 object-contain dark:border-red-900/30"
+                  />
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -276,6 +403,7 @@ export default function AdminPedidosPage() {
   const [muted, setMuted] = useState(false)
   const [newOrderIds, setNewOrderIds] = useState(new Set())
   const knownIdsRef = useRef(new Set())
+  const [cancelDialogOrderId, setCancelDialogOrderId] = useState(null)
 
   const loadOrders = useCallback(async () => {
     setLoading(true)
@@ -374,10 +502,13 @@ export default function AdminPedidosPage() {
     }
   }
 
-  async function handleCancel(orderId) {
-    if (!confirm('¿Cancelar este pedido?')) return
+  function handleCancel(orderId) {
+    setCancelDialogOrderId(orderId)
+  }
+
+  async function handleConfirmCancel(orderId, { reason, imageUrl }) {
     try {
-      const updated = await adminCancelOrder(orderId)
+      const updated = await adminCancelOrder(orderId, { reason, imageUrl })
       setOrders((prev) =>
         prev.map((o) => (o.id === updated.id ? updated : o)),
       )
@@ -600,6 +731,14 @@ export default function AdminPedidosPage() {
           </table>
         </div>
       )}
+
+      {/* Cancel Dialog */}
+      <CancelOrderDialog
+        orderId={cancelDialogOrderId}
+        open={cancelDialogOrderId !== null}
+        onOpenChange={(open) => { if (!open) setCancelDialogOrderId(null) }}
+        onConfirm={handleConfirmCancel}
+      />
     </div>
   )
 }
