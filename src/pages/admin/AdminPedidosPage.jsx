@@ -4,9 +4,11 @@ import {
   adminAdvanceOrder,
   adminRevertOrder,
   adminCancelOrder,
+  adminSetOrderStatus,
   adminSimulateNewOrder,
 } from '@/mocks/handlers'
 import { orderStatusLabels } from '@/mocks/data'
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -108,7 +110,7 @@ function formatDate(isoString) {
 
 const KANBAN_MAX_VISIBLE = 4
 
-function KanbanColumn({ title, orders, onAdvance, onRevert, onCancel, newOrderIds }) {
+function KanbanColumn({ title, orders, onAdvance, onRevert, onCancel, newOrderIds, droppableId }) {
   const [expanded, setExpanded] = useState(false)
   const visibleOrders = expanded ? orders : orders.slice(0, KANBAN_MAX_VISIBLE)
   const hasMore = orders.length > KANBAN_MAX_VISIBLE
@@ -123,19 +125,33 @@ function KanbanColumn({ title, orders, onAdvance, onRevert, onCancel, newOrderId
           </span>
         </h3>
       </div>
-      <div className="flex-1 space-y-2 p-2">
-        {orders.length === 0 && (
-          <p className="py-4 text-center text-[10px] text-gray-400">Sin pedidos</p>
-        )}
-        {visibleOrders.map((order) => (
+      <Droppable droppableId={droppableId}>
+        {(provided, snapshot) => (
           <div
-            key={order.id}
+            ref={provided.innerRef}
+            {...provided.droppableProps}
             className={cn(
-              'rounded-md border border-gray-200 bg-white p-2 shadow-sm dark:border-gray-700 dark:bg-gray-800',
-              newOrderIds?.has(order.id) &&
-                'animate-pulse border-green-400 bg-green-50 ring-2 ring-green-400/50 dark:border-green-500 dark:bg-green-950/30',
+              'flex-1 space-y-2 p-2 transition-colors',
+              snapshot.isDraggingOver && 'bg-blue-50/50 dark:bg-blue-950/20',
             )}
           >
+            {orders.length === 0 && !snapshot.isDraggingOver && (
+              <p className="py-4 text-center text-[10px] text-gray-400">Sin pedidos</p>
+            )}
+            {visibleOrders.map((order, index) => (
+              <Draggable key={order.id} draggableId={String(order.id)} index={index}>
+                {(dragProvided, dragSnapshot) => (
+                  <div
+                    ref={dragProvided.innerRef}
+                    {...dragProvided.draggableProps}
+                    {...dragProvided.dragHandleProps}
+                    className={cn(
+                      'rounded-md border border-gray-200 bg-white p-2 shadow-sm dark:border-gray-700 dark:bg-gray-800',
+                      newOrderIds?.has(order.id) &&
+                        'animate-pulse border-green-400 bg-green-50 ring-2 ring-green-400/50 dark:border-green-500 dark:bg-green-950/30',
+                      dragSnapshot.isDragging && 'rotate-2 shadow-lg ring-2 ring-blue-400/50',
+                    )}
+                  >
             <div className="mb-1 flex items-center justify-between">
               <span className="text-xs font-bold">#{order.id}</span>
               <StatusBadge status={order.status} />
@@ -195,27 +211,33 @@ function KanbanColumn({ title, orders, onAdvance, onRevert, onCancel, newOrderId
                 </>
               )}
             </div>
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+            {provided.placeholder}
+            {hasMore && !expanded && (
+              <button
+                onClick={() => setExpanded(true)}
+                className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[10px] font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+              >
+                Ver más ({orders.length - KANBAN_MAX_VISIBLE})
+                <ChevronDown className="h-3 w-3" />
+              </button>
+            )}
+            {hasMore && expanded && (
+              <button
+                onClick={() => setExpanded(false)}
+                className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[10px] font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+              >
+                Ver menos
+                <ChevronUp className="h-3 w-3" />
+              </button>
+            )}
           </div>
-        ))}
-        {hasMore && !expanded && (
-          <button
-            onClick={() => setExpanded(true)}
-            className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[10px] font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-          >
-            Ver más ({orders.length - KANBAN_MAX_VISIBLE})
-            <ChevronDown className="h-3 w-3" />
-          </button>
         )}
-        {hasMore && expanded && (
-          <button
-            onClick={() => setExpanded(false)}
-            className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[10px] font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-          >
-            Ver menos
-            <ChevronUp className="h-3 w-3" />
-          </button>
-        )}
-      </div>
+      </Droppable>
     </div>
   )
 }
@@ -539,6 +561,26 @@ export default function AdminPedidosPage() {
     }
   }
 
+  async function handleDragEnd(result) {
+    const { draggableId, destination, source } = result
+    if (!destination) return
+    if (destination.droppableId === source.droppableId) return
+    const orderId = Number(draggableId)
+    const newStatus = destination.droppableId
+    // Optimistic update
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)),
+    )
+    try {
+      await adminSetOrderStatus(orderId, newStatus)
+    } catch (err) {
+      alert(err.message)
+      // Rollback
+      const data = await adminGetAllOrders()
+      setOrders(data)
+    }
+  }
+
   if (loading) {
     return (
       <div className="py-12 text-center text-gray-500">Cargando pedidos...</div>
@@ -609,19 +651,22 @@ export default function AdminPedidosPage() {
       {/* Kanban View */}
       {view === 'kanban' && (
         <>
-          <div className="flex gap-2 overflow-x-auto pb-4">
-            {kanbanStatuses.map((status) => (
-              <KanbanColumn
-                key={status}
-                title={orderStatusLabels[status] || status}
-                orders={orders.filter((o) => o.status === status)}
-                onAdvance={handleAdvance}
-                onRevert={handleRevert}
-                onCancel={handleCancel}
-                newOrderIds={newOrderIds}
-              />
-            ))}
-          </div>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="flex gap-2 overflow-x-auto pb-4">
+              {kanbanStatuses.map((status) => (
+                <KanbanColumn
+                  key={status}
+                  droppableId={status}
+                  title={orderStatusLabels[status] || status}
+                  orders={orders.filter((o) => o.status === status)}
+                  onAdvance={handleAdvance}
+                  onRevert={handleRevert}
+                  onCancel={handleCancel}
+                  newOrderIds={newOrderIds}
+                />
+              ))}
+            </div>
+          </DragDropContext>
           {cancelledOrders.length > 0 && (
             <CancelledSection orders={cancelledOrders} onRevert={handleRevert} onPreviewImage={setPreviewImageUrl} />
           )}

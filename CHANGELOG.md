@@ -2,6 +2,16 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.12.4] - 2026-03-14
+
+### Implementado — Drag & drop en kanban
+
+- **Drag & drop**: las tarjetas del kanban se pueden arrastrar entre columnas para cambiar el estado del pedido
+- **Librería**: `@hello-pangea/dnd` (fork mantenido de react-beautiful-dnd)
+- **Feedback visual**: columna destino resaltada en azul al arrastrar, tarjeta con rotación y sombra
+- **Actualización optimista**: el estado cambia inmediatamente con rollback automático si falla
+- **Handler `adminSetOrderStatus`**: nuevo mock handler para establecer estado arbitrario
+
 ## [0.12.3] - 2026-03-14
 
 ### Implementado — Cancelación con motivo e imagen

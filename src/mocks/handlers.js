@@ -523,7 +523,6 @@ export async function adminRevertOrder(orderId) {
   return { ...order }
 }
 
-/** Cancel an order (admin). */
 /** Cancel an order (admin). Accepts reason and optional image. */
 export async function adminCancelOrder(orderId, { reason, imageUrl } = {}) {
   await delay()
@@ -533,6 +532,18 @@ export async function adminCancelOrder(orderId, { reason, imageUrl } = {}) {
   order.status = 'cancelado'
   order.cancelReason = reason || ''
   order.cancelImageUrl = imageUrl || null
+  order.updatedAt = new Date().toISOString()
+  return { ...order }
+}
+
+/** Set an order to an arbitrary status (admin — used for drag & drop). */
+export async function adminSetOrderStatus(orderId, newStatus) {
+  await delay()
+  const order = orders.find((o) => o.id === orderId)
+  if (!order) throw new Error('Pedido no encontrado')
+  const validStatuses = [...adminOrderFlow, 'cancelado']
+  if (!validStatuses.includes(newStatus)) throw new Error('Estado inválido')
+  order.status = newStatus
   order.updatedAt = new Date().toISOString()
   return { ...order }
 }
