@@ -180,6 +180,10 @@ export default function AdminListasPage() {
 
   // ── Detail view ──
   if (view === 'detail' && selectedSource) {
+    const metaDirty = sourceLabel.trim() !== selectedSource.label || sourceHasItemPrices !== (selectedSource.hasItemPrices || false)
+    const flavorsDirty = Object.keys(flavorEdits).length > 0
+    const hasPendingChanges = metaDirty || flavorsDirty
+
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-3">
@@ -213,13 +217,26 @@ export default function AdminListasPage() {
               Precio individual por item
             </label>
             <div className="flex items-center gap-2">
-              <Button size="sm" onClick={handleSaveSourceMeta} disabled={!sourceLabel.trim() || savingMeta}>
+              <Button
+                size="sm"
+                variant={hasPendingChanges ? 'default' : 'outline'}
+                onClick={handleSaveSourceMeta}
+                disabled={!sourceLabel.trim() || savingMeta}
+              >
                 {savingMeta ? 'Guardando...' : 'Guardar'}
               </Button>
               <span className="text-xs text-gray-400">{flavors.length} opciones</span>
             </div>
           </div>
         </div>
+
+        {hasPendingChanges && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 dark:border-amber-800 dark:bg-amber-950/30">
+            <p className="text-sm text-amber-700 dark:text-amber-300">
+              Tenés cambios sin guardar. Presioná <strong>Guardar</strong> para aplicarlos.
+            </p>
+          </div>
+        )}
 
         {selectedSource.usedBy?.length > 0 && (
           <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 dark:border-blue-800 dark:bg-blue-950/30">
@@ -247,10 +264,11 @@ export default function AdminListasPage() {
                 <div className="divide-y divide-gray-100 dark:divide-gray-800">
                   {flavors.map((fl) => {
                     const isPaused = flavorEdits[fl.id]?.paused ?? fl.paused ?? false
+                    const isEdited = fl.id in flavorEdits
                     return (
                       <div
                         key={fl.id}
-                        className={`flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 ${isPaused ? 'opacity-50' : ''}`}
+                        className={`flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 ${isPaused ? 'opacity-50' : ''} ${isEdited ? 'border-l-2 border-l-amber-400' : ''}`}
                       >
                         <span className="flex items-center gap-2 text-sm">
                           {fl.image && <span>{fl.image}</span>}

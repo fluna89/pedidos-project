@@ -2,6 +2,14 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.14.8] - 2026-03-16
+
+### Mejorado — Indicadores visuales de cambios sin guardar
+
+- **Banner de aviso**: aparece un banner ámbar "Tenés cambios sin guardar" cuando hay modificaciones pendientes
+- **Botón "Guardar" resaltado**: cambia de `outline` a botón primario (relleno) cuando hay cambios sin guardar
+- **Borde ámbar en items modificados**: las filas con cambios locales (pausa o precio) muestran un borde izquierdo ámbar
+
 ## [0.14.7] - 2026-03-16
 
 ### Mejorado — Guardado unificado en detalle de listas
