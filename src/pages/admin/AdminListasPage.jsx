@@ -7,6 +7,7 @@ import {
   getFlavors,
   adminAddFlavor,
   adminDeleteFlavor,
+  adminUpdateFlavor,
 } from '@/mocks/handlers'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,11 +20,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Plus, Pencil, Trash2, X, ChevronLeft } from 'lucide-react'
-
-function formatPrice(n) {
-  return `$${n.toLocaleString('es-AR')}`
-}
+import { Plus, Pencil, Trash2, X, ChevronLeft, Pause, Play } from 'lucide-react'
 
 export default function AdminListasPage() {
   const [sources, setSources] = useState([])
@@ -142,6 +139,22 @@ export default function AdminListasPage() {
     loadSources()
   }
 
+  async function handleTogglePauseFlavor(flavor) {
+    if (!selectedSource) return
+    const key = selectedSource.id === 'default' ? undefined : selectedSource.id
+    await adminUpdateFlavor(key, flavor.id, { paused: !flavor.paused })
+    loadFlavors(selectedSource.id)
+  }
+
+  async function handleUpdateFlavorPrice(flavor, newPrice) {
+    if (!selectedSource) return
+    const parsed = newPrice === '' ? undefined : Number(newPrice)
+    if (flavor.price === parsed) return
+    const key = selectedSource.id === 'default' ? undefined : selectedSource.id
+    await adminUpdateFlavor(key, flavor.id, { price: parsed })
+    loadFlavors(selectedSource.id)
+  }
+
   function handleBackToList() {
     setView('list')
     setSelectedSource(null)
@@ -221,24 +234,45 @@ export default function AdminListasPage() {
                   {flavors.map((fl) => (
                     <div
                       key={fl.id}
-                      className="flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40"
+                      className={`flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 ${fl.paused ? 'opacity-50' : ''}`}
                     >
                       <span className="flex items-center gap-2 text-sm">
                         {fl.image && <span>{fl.image}</span>}
-                        <span className="font-medium">{fl.name}</span>
-                        {fl.price != null && (
-                          <span className="text-gray-400">
-                            {formatPrice(fl.price)}
-                          </span>
-                        )}
+                        <span className={`font-medium ${fl.paused ? 'line-through' : ''}`}>{fl.name}</span>
                       </span>
-                      <button
-                        onClick={() => handleDeleteFlavor(fl.id)}
-                        className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-500 dark:hover:bg-gray-800 dark:hover:text-red-400"
-                        title="Eliminar"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        {selectedSource.hasItemPrices && (
+                          <Input
+                            type="number"
+                            min="0"
+                            defaultValue={fl.price ?? ''}
+                            onBlur={(e) => handleUpdateFlavorPrice(fl, e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') e.target.blur()
+                            }}
+                            placeholder="Precio"
+                            className="h-7 w-24 text-right text-sm"
+                          />
+                        )}
+                        <button
+                          onClick={() => handleTogglePauseFlavor(fl)}
+                          className={`rounded p-1 transition-colors ${
+                            fl.paused
+                              ? 'text-amber-500 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-900/20'
+                              : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800'
+                          }`}
+                          title={fl.paused ? 'Reactivar' : 'Pausar'}
+                        >
+                          {fl.paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteFlavor(fl.id)}
+                          className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-500 dark:hover:bg-gray-800 dark:hover:text-red-400"
+                          title="Eliminar"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

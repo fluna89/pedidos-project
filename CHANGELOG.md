@@ -2,6 +2,14 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.14.6] - 2026-03-16
+
+### Agregado — Edición de precio y pausa de items en listas
+
+- **Edición inline de precio**: en listas con "Precio individual por item", cada opción muestra un input de precio editable (se guarda al perder foco o con Enter)
+- **Pausar/reactivar items**: nuevo botón de pausa en cada opción — los items pausados se muestran atenuados y tachados
+- **Handler `adminUpdateFlavor`**: nuevo handler mock para actualizar precio y estado `paused` de opciones individuales
+
 ## [0.14.5] - 2026-03-16
 
 ### Mejorado — Botón Guardar explícito en detalle de listas

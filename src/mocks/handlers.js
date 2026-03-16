@@ -134,6 +134,17 @@ export async function adminDeleteFlavor(source, flavorId) {
   return { ok: true }
 }
 
+export async function adminUpdateFlavor(source, flavorId, data) {
+  await delay()
+  const key = source || 'default'
+  if (!flavorStores[key]) throw new Error('Unknown flavor source')
+  const flavor = flavorStores[key].find((f) => f.id === flavorId)
+  if (!flavor) throw new Error('Flavor not found')
+  if (data.price !== undefined) flavor.price = data.price
+  if (data.paused !== undefined) flavor.paused = data.paused
+  return { ...flavor }
+}
+
 // ── Flavor source CRUD ───────────────────────────────────────────
 
 export async function adminGetFlavorSources() {
