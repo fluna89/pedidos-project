@@ -2,6 +2,14 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.15.0] - 2026-03-16
+
+### Mejorado — Eliminación local y validación de precios en listas
+
+- **Eliminación requiere guardado**: eliminar un item ahora es un cambio local (se muestra tachado con borde rojo y botón "Deshacer"), solo se persiste al guardar
+- **Validación de precios**: si la lista tiene "Precio individual por item" activo, no se puede guardar si alguna opción no tiene precio asignado (banner rojo + botón deshabilitado)
+- **Contador de opciones actualizado**: refleja la cantidad excluyendo items marcados para eliminación
+
 ## [0.14.9] - 2026-03-16
 
 ### Mejorado — Ajustes UX en detalle de listas
