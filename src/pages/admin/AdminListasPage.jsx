@@ -130,7 +130,7 @@ export default function AdminListasPage() {
     const name = newFlavorName.trim()
     if (!name || !selectedSource) return
     const data = { name }
-    if (selectedSource.hasItemPrices && newFlavorPrice) {
+    if (sourceHasItemPrices && newFlavorPrice) {
       data.price = Number(newFlavorPrice)
     }
     const key = selectedSource.id === 'default' ? undefined : selectedSource.id
@@ -217,6 +217,20 @@ export default function AdminListasPage() {
               Precio individual por item
             </label>
             <div className="flex items-center gap-2">
+              {hasPendingChanges && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setSourceLabel(selectedSource.label)
+                    setSourceHasItemPrices(selectedSource.hasItemPrices || false)
+                    setFlavorEdits({})
+                  }}
+                  disabled={savingMeta}
+                >
+                  Cancelar
+                </Button>
+              )}
               <Button
                 size="sm"
                 variant={hasPendingChanges ? 'default' : 'outline'}
@@ -225,7 +239,6 @@ export default function AdminListasPage() {
               >
                 {savingMeta ? 'Guardando...' : 'Guardar'}
               </Button>
-              <span className="text-xs text-gray-400">{flavors.length} opciones</span>
             </div>
           </div>
         </div>
@@ -252,6 +265,10 @@ export default function AdminListasPage() {
 
         {/* Flavor list */}
         <div className="rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-800/50">
+            <span className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Opciones</span>
+            <span className="text-xs text-gray-400">{flavors.length} {flavors.length === 1 ? 'opción' : 'opciones'}</span>
+          </div>
           {loadingFlavors ? (
             <div className="px-4 py-8 text-center text-sm text-gray-400">Cargando...</div>
           ) : (
@@ -275,7 +292,7 @@ export default function AdminListasPage() {
                           <span className={`font-medium ${isPaused ? 'line-through' : ''}`}>{fl.name}</span>
                         </span>
                         <div className="flex items-center gap-2">
-                          {selectedSource.hasItemPrices && (
+                          {sourceHasItemPrices && (
                             <Input
                               type="number"
                               min="0"
@@ -326,7 +343,7 @@ export default function AdminListasPage() {
                     }}
                   />
                 </div>
-                {selectedSource.hasItemPrices && (
+                {sourceHasItemPrices && (
                   <div className="w-24">
                     <Input
                       type="number"

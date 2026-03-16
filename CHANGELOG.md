@@ -2,6 +2,14 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.14.9] - 2026-03-16
+
+### Mejorado — Ajustes UX en detalle de listas
+
+- **Precio por item reactivo**: al activar/desactivar "Precio individual por item", los campos de precio de cada opción aparecen/desaparecen inmediatamente (sin necesidad de guardar primero)
+- **Contador de opciones reubicado**: "N opciones" ahora aparece como encabezado de la lista de opciones, más contextual
+- **Botón "Cancelar"**: aparece cuando hay cambios sin guardar, revierte todos los cambios locales (nombre, checkbox, pausas, precios)
+
 ## [0.14.8] - 2026-03-16
 
 ### Mejorado — Indicadores visuales de cambios sin guardar
