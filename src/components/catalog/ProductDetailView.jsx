@@ -352,6 +352,17 @@ export default function ProductDetailView({
               const atLimit =
                 selectedFlavors.length >= maxFlavors && !selected
 
+              if (flavor.paused) {
+                return (
+                  <span
+                    key={flavor.id}
+                    className="cursor-not-allowed rounded-full border border-gray-100 px-3 py-1.5 text-sm text-gray-300 line-through dark:border-gray-800 dark:text-gray-600"
+                  >
+                    {flavor.name}
+                  </span>
+                )
+              }
+
               return (
                 <button
                   key={flavor.id}
@@ -401,6 +412,18 @@ export default function ProductDetailView({
               {allFlavors.map((flavor) => {
                 const qty = flavorQuantities[flavor.id] || 0
                 const atLimit = totalQuantity >= unitCount
+
+                if (flavor.paused) {
+                  return (
+                    <div
+                      key={flavor.id}
+                      className="flex items-center justify-between rounded-md border border-gray-100 px-4 py-3 text-sm text-gray-300 dark:border-gray-800 dark:text-gray-600"
+                    >
+                      <span className="font-medium line-through">{flavor.name}</span>
+                      <span className="text-xs">No disponible</span>
+                    </div>
+                  )
+                }
 
                 return (
                   <div
@@ -467,6 +490,25 @@ export default function ProductDetailView({
             <div className="grid gap-2">
               {allFlavors.map((flavor) => {
                 const qty = flavorQuantities[flavor.id] || 0
+
+                if (flavor.paused) {
+                  return (
+                    <div
+                      key={flavor.id}
+                      className="flex items-center gap-3 rounded-md border border-gray-100 px-4 py-3 text-sm text-gray-300 dark:border-gray-800 dark:text-gray-600"
+                    >
+                      {flavor.image && (
+                        <span className="text-2xl leading-none opacity-30">
+                          {flavor.image}
+                        </span>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <span className="font-medium line-through">{flavor.name}</span>
+                      </div>
+                      <span className="text-xs">No disponible</span>
+                    </div>
+                  )
+                }
 
                 return (
                   <div

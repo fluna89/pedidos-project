@@ -112,9 +112,7 @@ export async function getCategories() {
 export async function getFlavors(source) {
   await delay()
   const key = source || 'default'
-  return (flavorStores[key] || flavorStores.default)
-    .filter((f) => !f.paused)
-    .map((f) => ({ ...f }))
+  return (flavorStores[key] || flavorStores.default).map((f) => ({ ...f }))
 }
 
 export async function adminGetFlavors(source) {

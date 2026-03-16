@@ -1,6 +1,14 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.15.6] - 2026-03-16
+
+### Mejorado — Items pausados visibles pero no seleccionables para el cliente
+
+- **Flavors pausados tachados**: en la vista del cliente, los items pausados aparecen tachados, atenuados y con texto "No disponible", sin posibilidad de seleccionarlos
+- **Aplica a los 3 modos**: toggle (chips), cantidad sin precio, y cantidad con precio individual
+- **`getFlavors` devuelve todos**: los items pausados ya no se ocultan, se muestran como no disponibles
+
 ## [0.15.5] - 2026-03-16
 
 ### Corregido — Precio dinámico en listado de productos
