@@ -169,7 +169,6 @@ export default function AdminListasPage() {
             <Input
               value={sourceLabel}
               onChange={(e) => setSourceLabel(e.target.value)}
-              onBlur={handleSaveSourceMeta}
               placeholder="Nombre de la lista"
               className="mt-1 text-lg font-bold"
             />
@@ -179,31 +178,19 @@ export default function AdminListasPage() {
               <input
                 type="checkbox"
                 checked={sourceHasItemPrices}
-                onChange={(e) => {
-                  setSourceHasItemPrices(e.target.checked)
-                  // Save after state update via setTimeout
-                  const newVal = e.target.checked
-                  setTimeout(async () => {
-                    if (!selectedSource) return
-                    setSavingMeta(true)
-                    try {
-                      await adminUpdateFlavorSource(selectedSource.id, {
-                        label: sourceLabel.trim(),
-                        hasItemPrices: newVal,
-                      })
-                      setSelectedSource((prev) => ({ ...prev, hasItemPrices: newVal }))
-                      await loadSources()
-                    } finally {
-                      setSavingMeta(false)
-                    }
-                  }, 0)
-                }}
+                onChange={(e) => setSourceHasItemPrices(e.target.checked)}
                 className="rounded"
               />
               Precio individual por item
             </label>
-            {savingMeta && <span className="text-xs text-gray-400">Guardando...</span>}
-            <span className="text-xs text-gray-400">{flavors.length} opciones</span>
+            <div className="flex items-center gap-2">
+              {(sourceLabel.trim() !== selectedSource.label || sourceHasItemPrices !== (selectedSource.hasItemPrices || false)) && (
+                <Button size="sm" onClick={handleSaveSourceMeta} disabled={!sourceLabel.trim() || savingMeta}>
+                  {savingMeta ? 'Guardando...' : 'Guardar'}
+                </Button>
+              )}
+              <span className="text-xs text-gray-400">{flavors.length} opciones</span>
+            </div>
           </div>
         </div>
 

@@ -2,6 +2,12 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.14.5] - 2026-03-16
+
+### Mejorado — Botón Guardar explícito en detalle de listas
+
+- **Botón "Guardar"**: reemplaza el auto-guardado por un botón explícito que aparece solo cuando hay cambios sin guardar en nombre o precio por item
+
 ## [0.14.4] - 2026-03-16
 
 ### Mejorado — Edición inline en detalle de listas
