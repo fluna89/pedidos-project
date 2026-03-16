@@ -35,7 +35,6 @@ export default function AdminListasPage() {
   const [showNewSource, setShowNewSource] = useState(false)
   const [editingSource, setEditingSource] = useState(null)
   const [sourceLabel, setSourceLabel] = useState('')
-  const [sourceDesc, setSourceDesc] = useState('')
   const [sourceHasItemPrices, setSourceHasItemPrices] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
 
@@ -73,7 +72,6 @@ export default function AdminListasPage() {
   // ── Source CRUD ──
   function openNewSource() {
     setSourceLabel('')
-    setSourceDesc('')
     setSourceHasItemPrices(false)
     setEditingSource(null)
     setShowNewSource(true)
@@ -81,7 +79,6 @@ export default function AdminListasPage() {
 
   function openEditSource(src) {
     setSourceLabel(src.label)
-    setSourceDesc(src.desc || '')
     setSourceHasItemPrices(src.hasItemPrices || false)
     setEditingSource(src.id)
     setShowNewSource(true)
@@ -93,13 +90,11 @@ export default function AdminListasPage() {
     if (editingSource) {
       await adminUpdateFlavorSource(editingSource, {
         label,
-        desc: sourceDesc.trim(),
         hasItemPrices: sourceHasItemPrices,
       })
     } else {
       await adminCreateFlavorSource({
         label,
-        desc: sourceDesc.trim(),
         hasItemPrices: sourceHasItemPrices,
       })
     }
@@ -169,9 +164,6 @@ export default function AdminListasPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">{selectedSource.label}</h1>
-            {selectedSource.desc && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">{selectedSource.desc}</p>
-            )}
             <div className="mt-1 flex items-center gap-2">
               {selectedSource.hasItemPrices && (
                 <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
@@ -299,15 +291,6 @@ export default function AdminListasPage() {
                   className="mt-1"
                 />
               </div>
-              <div>
-                <Label>Descripción (opcional)</Label>
-                <Input
-                  value={sourceDesc}
-                  onChange={(e) => setSourceDesc(e.target.value)}
-                  placeholder="Ej: Sabores artesanales"
-                  className="mt-1"
-                />
-              </div>
               <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                 <input
                   type="checkbox"
@@ -353,7 +336,6 @@ export default function AdminListasPage() {
             <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase tracking-wider text-gray-500 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-400">
               <tr>
                 <th className="px-4 py-2.5">Nombre</th>
-                <th className="px-4 py-2.5">Descripción</th>
                 <th className="px-4 py-2.5 text-center">Opciones</th>
                 <th className="px-4 py-2.5 text-center">Precio por item</th>
                 <th className="px-4 py-2.5 text-right">Acciones</th>
@@ -367,9 +349,6 @@ export default function AdminListasPage() {
                   onClick={() => openSourceDetail(src)}
                 >
                   <td className="px-4 py-2.5 font-medium">{src.label}</td>
-                  <td className="px-4 py-2.5 text-gray-500 dark:text-gray-400">
-                    {src.desc || '—'}
-                  </td>
                   <td className="px-4 py-2.5 text-center font-mono">{src.count}</td>
                   <td className="px-4 py-2.5 text-center">
                     {src.hasItemPrices ? (
@@ -427,15 +406,6 @@ export default function AdminListasPage() {
                 value={sourceLabel}
                 onChange={(e) => setSourceLabel(e.target.value)}
                 placeholder="Ej: Sabores de helado"
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label>Descripción (opcional)</Label>
-              <Input
-                value={sourceDesc}
-                onChange={(e) => setSourceDesc(e.target.value)}
-                placeholder="Ej: Sabores artesanales"
                 className="mt-1"
               />
             </div>

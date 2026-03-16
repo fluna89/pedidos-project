@@ -2,6 +2,12 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.14.1] - 2026-03-16
+
+### Mejorado — Listas de opciones
+
+- **Eliminado campo "Descripción"** de las listas de opciones: removido de tabla, dialogs de crear/editar, y vista de detalle
+
 ## [0.14.0] - 2026-03-16
 
 ### Implementado — Gestión de listas de opciones (admin)
