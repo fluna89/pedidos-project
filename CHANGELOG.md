@@ -2,6 +2,12 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.15.2] - 2026-03-16
+
+### Corregido — Label "Eliminado" sin tachado
+
+- El badge "Eliminado" ya no hereda el tachado del nombre del item
+
 ## [0.15.1] - 2026-03-16
 
 ### Mejorado — Labels de estado en items de listas

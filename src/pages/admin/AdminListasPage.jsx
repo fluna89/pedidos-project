@@ -317,10 +317,10 @@ export default function AdminListasPage() {
                           key={fl.id}
                           className="flex items-center justify-between border-l-2 border-l-red-400 px-4 py-2.5 opacity-40"
                         >
-                          <span className="flex items-center gap-2 text-sm line-through">
-                            {fl.image && <span>{fl.image}</span>}
-                            <span className="font-medium">{fl.name}</span>
-                            <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700 no-underline dark:bg-red-900/30 dark:text-red-300">Eliminado</span>
+                          <span className="flex items-center gap-2 text-sm">
+                            {fl.image && <span className="line-through">{fl.image}</span>}
+                            <span className="font-medium line-through">{fl.name}</span>
+                            <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">Eliminado</span>
                           </span>
                           <button
                             onClick={() => setFlavorEdits((prev) => {
