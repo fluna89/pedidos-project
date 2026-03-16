@@ -40,6 +40,7 @@ export default function AdminListasPage() {
   const [loadingFlavors, setLoadingFlavors] = useState(false)
   const [newFlavorName, setNewFlavorName] = useState('')
   const [newFlavorPrice, setNewFlavorPrice] = useState('')
+  const [flavorEdits, setFlavorEdits] = useState({}) // { [flavorId]: { paused?, price? } }
 
   const loadSources = useCallback(async () => {
     setLoading(true)
@@ -96,6 +97,7 @@ export default function AdminListasPage() {
     setSelectedSource(src)
     setSourceLabel(src.label)
     setSourceHasItemPrices(src.hasItemPrices || false)
+    setFlavorEdits({})
     setView('detail')
     loadFlavors(src.id)
   }
@@ -104,13 +106,21 @@ export default function AdminListasPage() {
     if (!selectedSource || !sourceLabel.trim()) return
     setSavingMeta(true)
     try {
+      // Save source metadata
       await adminUpdateFlavorSource(selectedSource.id, {
         label: sourceLabel.trim(),
         hasItemPrices: sourceHasItemPrices,
       })
+      // Save flavor edits
+      const key = selectedSource.id === 'default' ? undefined : selectedSource.id
+      for (const [flavorId, edits] of Object.entries(flavorEdits)) {
+        await adminUpdateFlavor(key, flavorId, edits)
+      }
+      setFlavorEdits({})
       const updated = { ...selectedSource, label: sourceLabel.trim(), hasItemPrices: sourceHasItemPrices }
       setSelectedSource(updated)
       await loadSources()
+      await loadFlavors(selectedSource.id)
     } finally {
       setSavingMeta(false)
     }
@@ -135,24 +145,29 @@ export default function AdminListasPage() {
     if (!selectedSource) return
     const key = selectedSource.id === 'default' ? undefined : selectedSource.id
     await adminDeleteFlavor(key, flavorId)
+    setFlavorEdits((prev) => {
+      const next = { ...prev }
+      delete next[flavorId]
+      return next
+    })
     loadFlavors(selectedSource.id)
     loadSources()
   }
 
-  async function handleTogglePauseFlavor(flavor) {
-    if (!selectedSource) return
-    const key = selectedSource.id === 'default' ? undefined : selectedSource.id
-    await adminUpdateFlavor(key, flavor.id, { paused: !flavor.paused })
-    loadFlavors(selectedSource.id)
+  function handleTogglePauseFlavor(flavor) {
+    const currentPaused = flavorEdits[flavor.id]?.paused ?? flavor.paused ?? false
+    setFlavorEdits((prev) => ({
+      ...prev,
+      [flavor.id]: { ...prev[flavor.id], paused: !currentPaused },
+    }))
   }
 
-  async function handleUpdateFlavorPrice(flavor, newPrice) {
-    if (!selectedSource) return
+  function handleEditFlavorPrice(flavor, newPrice) {
     const parsed = newPrice === '' ? undefined : Number(newPrice)
-    if (flavor.price === parsed) return
-    const key = selectedSource.id === 'default' ? undefined : selectedSource.id
-    await adminUpdateFlavor(key, flavor.id, { price: parsed })
-    loadFlavors(selectedSource.id)
+    setFlavorEdits((prev) => ({
+      ...prev,
+      [flavor.id]: { ...prev[flavor.id], price: parsed },
+    }))
   }
 
   function handleBackToList() {
@@ -160,6 +175,7 @@ export default function AdminListasPage() {
     setSelectedSource(null)
     setNewFlavorName('')
     setNewFlavorPrice('')
+    setFlavorEdits({})
   }
 
   // ── Detail view ──
@@ -197,11 +213,9 @@ export default function AdminListasPage() {
               Precio individual por item
             </label>
             <div className="flex items-center gap-2">
-              {(sourceLabel.trim() !== selectedSource.label || sourceHasItemPrices !== (selectedSource.hasItemPrices || false)) && (
-                <Button size="sm" onClick={handleSaveSourceMeta} disabled={!sourceLabel.trim() || savingMeta}>
-                  {savingMeta ? 'Guardando...' : 'Guardar'}
-                </Button>
-              )}
+              <Button size="sm" onClick={handleSaveSourceMeta} disabled={!sourceLabel.trim() || savingMeta}>
+                {savingMeta ? 'Guardando...' : 'Guardar'}
+              </Button>
               <span className="text-xs text-gray-400">{flavors.length} opciones</span>
             </div>
           </div>
@@ -231,50 +245,50 @@ export default function AdminListasPage() {
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                  {flavors.map((fl) => (
-                    <div
-                      key={fl.id}
-                      className={`flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 ${fl.paused ? 'opacity-50' : ''}`}
-                    >
-                      <span className="flex items-center gap-2 text-sm">
-                        {fl.image && <span>{fl.image}</span>}
-                        <span className={`font-medium ${fl.paused ? 'line-through' : ''}`}>{fl.name}</span>
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {selectedSource.hasItemPrices && (
-                          <Input
-                            type="number"
-                            min="0"
-                            defaultValue={fl.price ?? ''}
-                            onBlur={(e) => handleUpdateFlavorPrice(fl, e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') e.target.blur()
-                            }}
-                            placeholder="Precio"
-                            className="h-7 w-24 text-right text-sm"
-                          />
-                        )}
-                        <button
-                          onClick={() => handleTogglePauseFlavor(fl)}
-                          className={`rounded p-1 transition-colors ${
-                            fl.paused
-                              ? 'text-amber-500 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-900/20'
-                              : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800'
-                          }`}
-                          title={fl.paused ? 'Reactivar' : 'Pausar'}
-                        >
-                          {fl.paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
-                        </button>
-                        <button
-                          onClick={() => handleDeleteFlavor(fl.id)}
-                          className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-500 dark:hover:bg-gray-800 dark:hover:text-red-400"
-                          title="Eliminar"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                  {flavors.map((fl) => {
+                    const isPaused = flavorEdits[fl.id]?.paused ?? fl.paused ?? false
+                    return (
+                      <div
+                        key={fl.id}
+                        className={`flex items-center justify-between px-4 py-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 ${isPaused ? 'opacity-50' : ''}`}
+                      >
+                        <span className="flex items-center gap-2 text-sm">
+                          {fl.image && <span>{fl.image}</span>}
+                          <span className={`font-medium ${isPaused ? 'line-through' : ''}`}>{fl.name}</span>
+                        </span>
+                        <div className="flex items-center gap-2">
+                          {selectedSource.hasItemPrices && (
+                            <Input
+                              type="number"
+                              min="0"
+                              defaultValue={fl.price ?? ''}
+                              onChange={(e) => handleEditFlavorPrice(fl, e.target.value)}
+                              placeholder="Precio"
+                              className="h-7 w-24 text-right text-sm"
+                            />
+                          )}
+                          <button
+                            onClick={() => handleTogglePauseFlavor(fl)}
+                            className={`rounded p-1 transition-colors ${
+                              isPaused
+                                ? 'text-amber-500 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-900/20'
+                                : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800'
+                            }`}
+                            title={isPaused ? 'Reactivar' : 'Pausar'}
+                          >
+                            {isPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteFlavor(fl.id)}
+                            className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-500 dark:hover:bg-gray-800 dark:hover:text-red-400"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
 

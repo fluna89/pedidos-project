@@ -2,6 +2,14 @@
 
 Registro de funcionalidades implementadas y planificadas.
 
+## [0.14.7] - 2026-03-16
+
+### Mejorado — Guardado unificado en detalle de listas
+
+- **Botón "Guardar" siempre visible**: ya no se oculta cuando no hay cambios
+- **Cambios locales**: pausar/reactivar items y editar precios ahora son cambios locales que solo se persisten al presionar "Guardar"
+- **Guardado unificado**: el botón guarda metadatos de la lista (nombre, precio por item) y todos los cambios de items (pausas, precios) en una sola acción
+
 ## [0.14.6] - 2026-03-16
 
 ### Agregado — Edición de precio y pausa de items en listas
