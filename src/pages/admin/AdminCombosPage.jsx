@@ -460,6 +460,7 @@ export default function AdminCombosPage() {
               <ComboWizard
                 combo={buildComboFromForm(form)}
                 onAdd={() => setShowPreview(false)}
+                previewMode
               />
             )}
           </DialogContent>

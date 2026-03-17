@@ -19,12 +19,12 @@ import ProductDetailView from './ProductDetailView'
  * - onAdd(comboCartItem): called with the final cart-ready combo object
  * - preview: if true, renders only the overview (no state, no async loads)
  */
-export default function ComboWizard({ combo, onAdd, preview }) {
+export default function ComboWizard({ combo, onAdd, preview, previewMode }) {
   if (preview) return <ComboOverview combo={combo} onStart={onAdd} />
-  return <ComboWizardFull combo={combo} onAdd={onAdd} />
+  return <ComboWizardFull combo={combo} onAdd={onAdd} previewMode={previewMode} />
 }
 
-function ComboWizardFull({ combo, onAdd }) {
+function ComboWizardFull({ combo, onAdd, previewMode }) {
   // 'overview' | stepIndex (number) | 'summary'
   const [phase, setPhase] = useState('overview')
   // Products available at each step: { [stepIdx]: Product[] }
@@ -282,7 +282,7 @@ function ComboWizardFull({ combo, onAdd }) {
           </Button>
           <Button
             className="flex-1"
-            disabled={!allStepsComplete || added}
+            disabled={!allStepsComplete || added || previewMode}
             onClick={handleAddToCart}
           >
             {added ? (

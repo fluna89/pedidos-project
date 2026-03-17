@@ -7,6 +7,7 @@ Registro de funcionalidades implementadas y planificadas.
 
 - Extraído `ComboOverview` como componente interno reutilizado tanto por la preview del admin como por la fase overview del wizard del cliente — **una sola fuente de verdad** para ambos
 - El botón "Armar combo" en la preview inline abre el dialog interactivo completo para probar la experiencia del cliente
+- Prop `previewMode` desactiva el botón "Agregar al carrito" en el dialog de preview
 - `ComboWizard` acepta prop `preview`: si es `true`, renderiza solo `ComboOverview` sin hooks, sin estado, sin carga async — React lo re-renderiza in-place sin desmontar
 - La lógica interactiva del wizard queda en `ComboWizardFull` (componente interno), totalmente aislada
 - Eliminado el card estático manual previo y el debounce, ya que el problema de raíz era el `key={JSON.stringify()}` que forzaba remontaje
