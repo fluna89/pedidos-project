@@ -1,6 +1,15 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.17.5] - 2026-03-17
+
+### Mejorado — Productos simples: cantidad persistente y control desde el menú
+
+- **Modo carrito**: al agregar un producto simple (ej. Coca Cola), la card pasa a modo "en carrito" mostrando la cantidad actual con controles ±
+- El botón **−** con cantidad 1 elimina el item del carrito
+- Botón de **eliminar** (🗑) para quitar el producto del carrito directamente desde la card del menú
+- El contador ya no se reinicia — refleja el estado real del carrito en todo momento
+
 ## [0.17.4] - 2026-03-17
 
 ### Mejorado — Ajustes UX en panel admin

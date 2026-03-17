@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useCart } from '@/hooks/useCart'
-import { Minus, Plus, ShoppingCart, Check, MessageSquare } from 'lucide-react'
+import { Minus, Plus, ShoppingCart, Check, MessageSquare, Trash2 } from 'lucide-react'
 
 function isSimpleProduct(product) {
   return (
@@ -21,9 +21,15 @@ export default function ProductCard({ product }) {
     : 0
   const hasMultipleFormats = product.formats.length > 1
   const simple = isSimpleProduct(product)
-  const { addItem, updateQuantity } = useCart()
+  const { items, addItem, updateQuantity, removeItem } = useCart()
 
-  const [quantity, setQuantity] = useState(1)
+  // Find existing cart item for this simple product
+  const cartItem = simple
+    ? items.find((i) => i.productId === product.id && !i.comboSteps)
+    : null
+  const inCart = !!cartItem
+
+  const [pendingQty, setPendingQty] = useState(1)
   const [comment, setComment] = useState('')
   const [showComment, setShowComment] = useState(false)
   const [added, setAdded] = useState(false)
@@ -32,14 +38,33 @@ export default function ProductCard({ product }) {
     if (!simple) return
     const format = product.formats[0] || { id: 'f-default', name: 'Estándar', price: minPrice }
     const newItem = addItem(product, format, [], comment, [])
-    if (quantity > 1) updateQuantity(newItem.cartId, quantity)
+    if (pendingQty > 1) updateQuantity(newItem.cartId, pendingQty)
     setAdded(true)
     setTimeout(() => {
       setAdded(false)
-      setQuantity(1)
+      setPendingQty(1)
       setComment('')
       setShowComment(false)
     }, 1200)
+  }
+
+  function handleCartIncrement() {
+    if (!cartItem) return
+    updateQuantity(cartItem.cartId, cartItem.quantity + 1)
+  }
+
+  function handleCartDecrement() {
+    if (!cartItem) return
+    if (cartItem.quantity <= 1) {
+      removeItem(cartItem.cartId)
+    } else {
+      updateQuantity(cartItem.cartId, cartItem.quantity - 1)
+    }
+  }
+
+  function handleRemove() {
+    if (!cartItem) return
+    removeItem(cartItem.cartId)
   }
 
   return (
@@ -67,66 +92,111 @@ export default function ProductCard({ product }) {
 
         {simple ? (
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">
-                ${minPrice.toLocaleString('es-AR')}
-              </span>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setShowComment((v) => !v)}
-                  className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-600 dark:border-gray-700 dark:hover:border-gray-500 dark:hover:text-gray-300"
-                  title="Agregar aclaración"
-                >
-                  <MessageSquare className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  type="button"
-                  disabled={quantity <= 1}
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 transition-colors hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-30 dark:border-gray-700 dark:hover:border-gray-500"
-                >
-                  <Minus className="h-3 w-3" />
-                </button>
-                <span className="w-5 text-center text-sm font-medium">{quantity}</span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => q + 1)}
-                  className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 transition-colors hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500"
-                >
-                  <Plus className="h-3 w-3" />
-                </button>
-              </div>
-            </div>
+            {inCart ? (
+              /* ── In-cart mode: adjust quantity or remove ── */
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">
+                    ${minPrice.toLocaleString('es-AR')}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={handleCartDecrement}
+                      className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 transition-colors hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </button>
+                    <span className="w-5 text-center text-sm font-medium">{cartItem.quantity}</span>
+                    <button
+                      type="button"
+                      onClick={handleCartIncrement}
+                      className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 transition-colors hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-none"
+                    onClick={handleRemove}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="sm" className="flex-1" disabled>
+                    <Check className="mr-1 h-3.5 w-3.5" />
+                    En carrito — ${(minPrice * cartItem.quantity).toLocaleString('es-AR')}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              /* ── Add mode: pick quantity and add ── */
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">
+                    ${minPrice.toLocaleString('es-AR')}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setShowComment((v) => !v)}
+                      className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-600 dark:border-gray-700 dark:hover:border-gray-500 dark:hover:text-gray-300"
+                      title="Agregar aclaración"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={pendingQty <= 1}
+                      onClick={() => setPendingQty((q) => Math.max(1, q - 1))}
+                      className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 transition-colors hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-30 dark:border-gray-700 dark:hover:border-gray-500"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </button>
+                    <span className="w-5 text-center text-sm font-medium">{pendingQty}</span>
+                    <button
+                      type="button"
+                      onClick={() => setPendingQty((q) => q + 1)}
+                      className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 transition-colors hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
 
-            {showComment && (
-              <Textarea
-                placeholder="Ej: sin sal, bien cocido..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                rows={2}
-                className="text-sm"
-              />
+                {showComment && (
+                  <Textarea
+                    placeholder="Ej: sin sal, bien cocido..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    rows={2}
+                    className="text-sm"
+                  />
+                )}
+
+                <Button
+                  size="sm"
+                  className="w-full"
+                  disabled={added}
+                  onClick={handleAdd}
+                >
+                  {added ? (
+                    <>
+                      <Check className="mr-1 h-3.5 w-3.5" />
+                      ¡Agregado!
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="mr-1 h-3.5 w-3.5" />
+                      Agregar — ${(minPrice * pendingQty).toLocaleString('es-AR')}
+                    </>
+                  )}
+                </Button>
+              </>
             )}
-
-            <Button
-              size="sm"
-              className="w-full"
-              disabled={added}
-              onClick={handleAdd}
-            >
-              {added ? (
-                <>
-                  <Check className="mr-1 h-3.5 w-3.5" />
-                  ¡Agregado!
-                </>
-              ) : (
-                <>
-                  <ShoppingCart className="mr-1 h-3.5 w-3.5" />
-                  Agregar — ${(minPrice * quantity).toLocaleString('es-AR')}
-                </>
-              )}
-            </Button>
           </div>
         ) : (
           <div className="flex items-center justify-between">
