@@ -1,6 +1,19 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.16.0] - 2026-03-16
+
+### Nuevo — Combos rediseñados con wizard por pasos
+
+- **Nuevo modelo de combos**: cada combo define `steps[]` con `productIds` (productos elegibles) y `comboPrice` (precio fijo o descuento %)
+- **ComboWizard**: componente paso a paso — overview → selección de producto (si hay múltiples opciones) → configuración (formato, sabores, extras) → resumen con edición por paso
+- **Pricing flexible**: combos con precio fijo (`type: 'fixed'`) o descuento porcentual (`type: 'discount'`) sobre el total individual
+- **Resumen interactivo**: pantalla final muestra cada paso configurado con botón de edición individual, precio combo y ahorro
+- **Carrito actualizado**: nuevo formato `comboSteps[]` reemplaza `comboSelections[]`, muestra detalle de cada producto del combo
+- **ProductCard**: combos muestran precio fijo o "X% OFF", botón "Armar combo" en lugar de "Elegir"
+- **Catálogo**: productos `comboOnly` se ocultan del menú público (preparado para productos exclusivos de combo)
+- **3 combos de ejemplo**: "Combo 2× 1/4 kg" (precio fijo), "Combo Docena de empanadas" (10% dto.) y "Combo Pizza + Helado" (15% dto., multi-producto)
+
 ## [0.15.7] - 2026-03-16
 
 ### Removido — Modo toggle (chips) de selección de sabores

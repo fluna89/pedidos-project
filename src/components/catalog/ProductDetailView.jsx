@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Check, Minus, Plus, ShoppingCart } from 'lucide-react'
+import { ArrowRight, Check, Minus, Plus, ShoppingCart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 /**
@@ -10,31 +10,27 @@ import { cn } from '@/lib/utils'
  *
  * Props:
  * - product: product object (real or virtual from admin form)
- * - allFlavors: flavor list for non-combo products
- * - comboFlavorsMap: { source: flavors[] } for combo products
- * - onAdd(format, extras, comment, flavors, comboSelections): called when user clicks "Agregar"
+ * - allFlavors: flavor list
+ * - onAdd(format, extras, comment, flavors): called when user clicks the action button
  * - preview: if true, disables the add button functionality
+ * - stepMode: if true, shows "Siguiente" instead of "Agregar" (used inside ComboWizard)
  */
 export default function ProductDetailView({
   product,
   allFlavors = [],
-  comboFlavorsMap = {},
   onAdd,
   preview = false,
+  stepMode = false,
 }) {
   const [selectedFormat, setSelectedFormat] = useState(
     product.formats.length === 1 ? product.formats[0] : null,
   )
   const [flavorQuantities, setFlavorQuantities] = useState({})
-  const [comboSelections, setComboSelections] = useState(
-    product.comboItems ? product.comboItems.map(() => ({})) : [],
-  )
   const [selectedExtras, setSelectedExtras] = useState([])
   const [comment, setComment] = useState('')
   const [added, setAdded] = useState(false)
 
   const isUnitPricing = product.unitPricing === true
-  const isCombo = product.isCombo === true
   const hasFlavorPrices = allFlavors.length > 0 && allFlavors[0].price != null
   const showFormats = !isUnitPricing && product.formats.length > 1
 
@@ -74,30 +70,6 @@ export default function ProductDetailView({
     })
   }
 
-  function incrementComboFlavor(itemIndex, flavorId) {
-    setComboSelections((prev) => {
-      const item = { ...prev[itemIndex] }
-      const total = Object.values(item).reduce((s, q) => s + q, 0)
-      if (total >= product.comboItems[itemIndex].unitCount) return prev
-      item[flavorId] = (item[flavorId] || 0) + 1
-      const updated = [...prev]
-      updated[itemIndex] = item
-      return updated
-    })
-  }
-
-  function decrementComboFlavor(itemIndex, flavorId) {
-    setComboSelections((prev) => {
-      const item = { ...prev[itemIndex] }
-      if ((item[flavorId] || 0) <= 0) return prev
-      item[flavorId] = item[flavorId] - 1
-      if (item[flavorId] === 0) delete item[flavorId]
-      const updated = [...prev]
-      updated[itemIndex] = item
-      return updated
-    })
-  }
-
   function toggleExtra(extra) {
     setSelectedExtras((prev) =>
       prev.some((e) => e.id === extra.id)
@@ -106,39 +78,16 @@ export default function ProductDetailView({
     )
   }
 
-  const flavorsComplete = hasFlavorPrices
-    ? totalQuantity >= 1
-    : unitCount > 0 && totalQuantity === unitCount
-
-  const comboComplete = isCombo
-    ? product.comboItems.every((ci, idx) => {
-        const sel = comboSelections[idx] || {}
-        return Object.values(sel).reduce((s, q) => s + q, 0) === ci.unitCount
-      })
+  const flavorsComplete = product.hasFlavors
+    ? hasFlavorPrices
+      ? totalQuantity >= 1
+      : unitCount > 0 && totalQuantity === unitCount
     : true
 
-  const canAdd = isCombo
-    ? selectedFormat && comboComplete
-    : selectedFormat && flavorsComplete
+  const canAdd = selectedFormat && flavorsComplete
 
   function handleAdd() {
     if (preview || !canAdd || !onAdd) return
-
-    if (isCombo) {
-      const comboForCart = product.comboItems.map((ci, idx) => {
-        const sel = comboSelections[idx] || {}
-        const flavors = comboFlavorsMap[ci.flavorsSource ?? 'default'] || []
-        return {
-          label: ci.label,
-          flavors: flavors
-            .filter((f) => sel[f.id] > 0)
-            .map((f) => ({ id: f.id, name: f.name, quantity: sel[f.id] })),
-        }
-      })
-      onAdd(selectedFormat, selectedExtras, comment, [], comboForCart)
-      setAdded(true)
-      return
-    }
 
     let formatForCart = selectedFormat
     const flavorsForCart = allFlavors
@@ -222,95 +171,6 @@ export default function ProductDetailView({
           </div>
         </div>
       )}
-
-      {/* Combo items selection */}
-      {isCombo &&
-        selectedFormat &&
-        product.comboItems.map((ci, idx) => {
-          const sel = comboSelections[idx] || {}
-          const currentTotal = Object.values(sel).reduce((s, q) => s + q, 0)
-          const flavors =
-            comboFlavorsMap[ci.flavorsSource ?? 'default'] || []
-          const hasFlavImgs = flavors.length > 0 && flavors[0].image
-
-          return (
-            <div key={idx} className="space-y-2">
-              <Label>
-                {ci.label}{' '}
-                <span
-                  className={cn(
-                    'text-sm',
-                    currentTotal === ci.unitCount
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-gray-400 dark:text-gray-500',
-                  )}
-                >
-                  ({currentTotal} de {ci.unitCount})
-                </span>
-              </Label>
-              <div className="grid gap-2">
-                {flavors.map((flavor) => {
-                  const qty = sel[flavor.id] || 0
-                  const atLimit = currentTotal >= ci.unitCount
-
-                  return (
-                    <div
-                      key={flavor.id}
-                      className={cn(
-                        'flex items-center gap-3 rounded-md border px-4 py-3 text-sm transition-colors',
-                        qty > 0
-                          ? 'border-gray-900 bg-gray-50 dark:border-gray-100 dark:bg-gray-800'
-                          : 'border-gray-200 dark:border-gray-700',
-                      )}
-                    >
-                      {hasFlavImgs && (
-                        <span className="text-2xl leading-none">
-                          {flavor.image}
-                        </span>
-                      )}
-                      <span className="min-w-0 flex-1 font-medium">
-                        {flavor.name}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          disabled={qty <= 0}
-                          className={cn(
-                            'flex h-7 w-7 items-center justify-center rounded-full border transition-colors',
-                            qty > 0
-                              ? 'border-gray-300 hover:border-gray-500 dark:border-gray-600 dark:hover:border-gray-400'
-                              : 'cursor-not-allowed border-gray-100 text-gray-300 dark:border-gray-800 dark:text-gray-600',
-                          )}
-                          onClick={() => decrementComboFlavor(idx, flavor.id)}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </button>
-                        <span className="w-5 text-center font-medium">
-                          {qty}
-                        </span>
-                        <button
-                          type="button"
-                          disabled={atLimit}
-                          className={cn(
-                            'flex h-7 w-7 items-center justify-center rounded-full border transition-colors',
-                            atLimit
-                              ? 'cursor-not-allowed border-gray-100 text-gray-300 dark:border-gray-800 dark:text-gray-600'
-                              : 'border-gray-300 hover:border-gray-500 dark:border-gray-600 dark:hover:border-gray-400',
-                          )}
-                          onClick={() =>
-                            incrementComboFlavor(idx, flavor.id)
-                          }
-                        >
-                          <Plus className="h-3 w-3" />
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )
-        })}
 
       {/* Flavor selection — quantity mode without per-flavor pricing */}
       {product.hasFlavors &&
@@ -539,7 +399,7 @@ export default function ProductDetailView({
         />
       </div>
 
-      {/* Add to cart button */}
+      {/* Action button */}
       <Button
         className="w-full"
         disabled={preview ? false : !canAdd || added}
@@ -548,7 +408,12 @@ export default function ProductDetailView({
         {added ? (
           <>
             <Check className="mr-1 h-4 w-4" />
-            ¡Agregado!
+            {stepMode ? '¡Listo!' : '¡Agregado!'}
+          </>
+        ) : stepMode ? (
+          <>
+            <ArrowRight className="mr-1 h-4 w-4" />
+            Siguiente
           </>
         ) : (
           <>

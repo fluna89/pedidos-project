@@ -131,14 +131,18 @@ export default function ProductCard({ product }) {
         ) : (
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">
-              {product.unitPricing
-                ? 'Armá tu pedido'
-                : hasMultipleFormats
-                  ? `Desde $${minPrice.toLocaleString('es-AR')}`
-                  : `$${minPrice.toLocaleString('es-AR')}`}
+              {product.isCombo && product.comboPrice
+                ? product.comboPrice.type === 'fixed'
+                  ? `$${product.comboPrice.value.toLocaleString('es-AR')}`
+                  : `${product.comboPrice.value}% OFF`
+                : product.unitPricing
+                  ? 'Armá tu pedido'
+                  : hasMultipleFormats
+                    ? `Desde $${minPrice.toLocaleString('es-AR')}`
+                    : `$${minPrice.toLocaleString('es-AR')}`}
             </span>
             <Link to={`/menu/${product.id}`}>
-              <Button size="sm">Elegir</Button>
+              <Button size="sm">{product.isCombo ? 'Armar combo' : 'Elegir'}</Button>
             </Link>
           </div>
         )}

@@ -61,25 +61,41 @@ export default function CartPage() {
                   {item.extras.length > 0 &&
                     ' + ' + item.extras.map((e) => e.name).join(', ')}
                 </p>
-                {item.comboSelections && (
+                {item.comboSteps && (
                   <div className="mt-1 space-y-0.5">
-                    {item.comboSelections.map((cs, i) => (
-                      <p
-                        key={i}
-                        className="text-sm text-gray-500 dark:text-gray-400"
-                      >
-                        <span className="font-medium text-gray-600 dark:text-gray-300">
-                          {cs.label}:
-                        </span>{' '}
-                        {cs.flavors
-                          .map((f) =>
-                            f.quantity > 1
-                              ? `${f.name} ×${f.quantity}`
-                              : f.name,
-                          )
-                          .join(', ')}
-                      </p>
-                    ))}
+                    {item.comboSteps.map((cs, i) => {
+                      const parts = []
+                      if (cs.flavors?.length > 0) {
+                        parts.push(
+                          cs.flavors
+                            .map((f) =>
+                              f.quantity > 1
+                                ? `${f.quantity} ${f.name}`
+                                : f.name,
+                            )
+                            .join(', '),
+                        )
+                      }
+                      if (cs.extras?.length > 0) {
+                        parts.push(
+                          '+ ' + cs.extras.map((e) => e.name).join(', '),
+                        )
+                      }
+                      return (
+                        <p
+                          key={i}
+                          className="text-sm text-gray-500 dark:text-gray-400"
+                        >
+                          <span className="font-medium text-gray-600 dark:text-gray-300">
+                            {cs.productName}
+                          </span>
+                          {cs.format && (
+                            <span> ({cs.format.name})</span>
+                          )}
+                          {parts.length > 0 && ' · ' + parts.join(' ')}
+                        </p>
+                      )
+                    })}
                   </div>
                 )}
                 {item.comment && (

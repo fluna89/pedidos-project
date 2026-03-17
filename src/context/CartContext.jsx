@@ -8,11 +8,12 @@ import { CartContext } from '@/context/cart-context'
  *   productId: number,
  *   name:      string,
  *   format:    { id, name, price },
- *   flavors:   [{ id, name }],
+ *   flavors:   [{ id, name, quantity?, price? }],
  *   extras:    [{ id, name, price }],
  *   comment:   string,
  *   quantity:  number,
  *   unitPrice: number,       // format.price + sum(extras.price)
+ *   comboSteps?: [{ label, productId, productName, format, extras, flavors }]
  * }
  */
 
@@ -24,8 +25,8 @@ export function CartProvider({ children }) {
   const [items, setItems] = useState([])
   const [orderComment, setOrderComment] = useState('')
 
-  const addItem = useCallback((product, format, extras = [], comment = '', flavors = [], comboSelections = null) => {
-    const unitPrice = calcUnitPrice(format, extras)
+  const addItem = useCallback((product, format, extras = [], comment = '', flavors = [], comboSteps = null) => {
+    const unitPrice = comboSteps ? format.price : calcUnitPrice(format, extras)
     const newItem = {
       cartId: 'cart-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
       productId: product.id,
@@ -37,7 +38,7 @@ export function CartProvider({ children }) {
         ...(f.quantity && { quantity: f.quantity }),
         ...(f.price != null && { price: f.price }),
       })),
-      ...(comboSelections && { comboSelections }),
+      ...(comboSteps && { comboSteps }),
       extras: extras.map((e) => ({ id: e.id, name: e.name, price: e.price })),
       comment,
       quantity: 1,

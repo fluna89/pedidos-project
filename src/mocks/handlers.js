@@ -93,14 +93,22 @@ function delay(ms = MOCK_DELAY) {
 export async function getMenu() {
   await delay()
   return mockMenu
-    .filter((item) => !item.paused && !item.counterOnly)
+    .filter((item) => !item.paused && !item.counterOnly && !item.comboOnly)
     .map((item) => ({ ...item }))
 }
 
 export async function getMenuByCategory(categoryId) {
   await delay()
   return mockMenu
-    .filter((item) => item.category === categoryId && !item.paused && !item.counterOnly)
+    .filter((item) => item.category === categoryId && !item.paused && !item.counterOnly && !item.comboOnly)
+    .map((item) => ({ ...item }))
+}
+
+export async function getMenuItemsByIds(ids) {
+  await delay()
+  return ids
+    .map((id) => mockMenu.find((i) => i.id === id))
+    .filter((item) => item && !item.paused)
     .map((item) => ({ ...item }))
 }
 
@@ -159,7 +167,13 @@ export async function adminGetFlavorSources() {
     // Find products that reference this flavor source
     const usedBy = products.filter((p) => {
       const directMatch = p.hasFlavors && (p.flavorsSource || 'default') === key
-      const comboMatch = p.comboItems?.some((ci) => ci.flavorsSource === key)
+      // For combos, check if any step references a product that uses this flavor source
+      const comboMatch = p.steps?.some((step) =>
+        step.productIds.some((pid) => {
+          const sp = products.find((pp) => pp.id === pid)
+          return sp?.hasFlavors && (sp.flavorsSource || 'default') === key
+        }),
+      )
       return directMatch || comboMatch
     }).map((p) => ({ id: p.id, name: p.name }))
     return {
@@ -212,11 +226,18 @@ export async function createOrder(orderData) {
   const normalizedItems = (orderData.items || []).map((item) => ({
     name: item.name,
     format: typeof item.format === 'object' ? item.format.name : item.format,
-    flavors: item.comboSelections
-      ? item.comboSelections
+    flavors: item.comboSteps
+      ? item.comboSteps
           .map(
-            (cs) =>
-              `${cs.label}: ${cs.flavors.map((f) => (f.quantity > 1 ? `${f.quantity} ${f.name}` : f.name)).join(', ')}`,
+            (cs) => {
+              const parts = [cs.productName]
+              if (cs.format) parts[0] += ` (${cs.format.name})`
+              if (cs.flavors?.length > 0)
+                parts.push(cs.flavors.map((f) => (f.quantity > 1 ? `${f.quantity} ${f.name}` : f.name)).join(', '))
+              if (cs.extras?.length > 0)
+                parts.push('+ ' + cs.extras.map((e) => e.name).join(', '))
+              return `${cs.label}: ${parts.join(' — ')}`
+            },
           )
           .join(' | ')
       : Array.isArray(item.flavors)
