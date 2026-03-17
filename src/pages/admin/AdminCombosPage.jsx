@@ -10,7 +10,6 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
   DialogContent,
@@ -250,8 +249,10 @@ export default function AdminCombosPage() {
 
   // ── Form view ─────────────────────────────────────
   if (editing !== null) {
+    const canPreview = form.name.trim() && form.steps.some((s) => s.productIds.length > 0)
+
     return (
-      <div className="mx-auto max-w-2xl space-y-6 p-6">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={cancelEdit}>
@@ -262,129 +263,186 @@ export default function AdminCombosPage() {
           </h1>
         </div>
 
-        {/* Name & description */}
-        <div className="space-y-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-          <div className="space-y-2">
-            <Label>Nombre</Label>
-            <Input
-              value={form.name}
-              onChange={(e) => updateField('name', e.target.value)}
-              placeholder="Ej: Combo 2× 1/4 kg"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Descripción (opcional)</Label>
-            <Textarea
-              value={form.description}
-              onChange={(e) => updateField('description', e.target.value)}
-              placeholder="Ej: 2 helados de 1/4 kg al mejor precio"
-              rows={2}
-            />
-          </div>
-        </div>
+        <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
+          {/* ── Left column: Form ── */}
+          <div className="space-y-6">
+            {/* Name & description */}
+            <div className="space-y-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Nombre</Label>
+                  <Input
+                    value={form.name}
+                    onChange={(e) => updateField('name', e.target.value)}
+                    placeholder="Ej: Combo 2× 1/4 kg"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Descripción (opcional)</Label>
+                  <Input
+                    value={form.description}
+                    onChange={(e) => updateField('description', e.target.value)}
+                    placeholder="Ej: 2 helados de 1/4 kg al mejor precio"
+                  />
+                </div>
+              </div>
+            </div>
 
-        {/* Pricing */}
-        <div className="space-y-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-          <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-            Precio del combo
-          </h2>
-          <div className="flex gap-3">
-            {[
-              { id: 'fixed', label: 'Precio fijo' },
-              { id: 'discount', label: 'Descuento %' },
-            ].map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => updateField('priceType', opt.id)}
-                className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition-colors ${
-                  form.priceType === opt.id
-                    ? 'border-gray-900 bg-gray-900 text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:border-gray-600'
-                }`}
+            {/* Pricing */}
+            <div className="space-y-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+              <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                Precio del combo
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex gap-3">
+                  {[
+                    { id: 'fixed', label: 'Precio fijo' },
+                    { id: 'discount', label: 'Descuento %' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => updateField('priceType', opt.id)}
+                      className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+                        form.priceType === opt.id
+                          ? 'border-gray-900 bg-gray-900 text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900'
+                          : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:border-gray-600'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  <Label>
+                    {form.priceType === 'fixed' ? 'Precio ($)' : 'Descuento (%)'}
+                  </Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step={form.priceType === 'fixed' ? '100' : '1'}
+                    value={form.priceValue}
+                    onChange={(e) => updateField('priceValue', e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {form.priceType === 'fixed'
+                      ? 'El cliente paga este monto fijo (los extras de cada paso suman aparte).'
+                      : 'Se descuenta este porcentaje sobre la suma individual de los pasos.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Steps */}
+            <div className="space-y-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                  Pasos del combo
+                </h2>
+                <Button variant="outline" size="sm" onClick={addStep}>
+                  <Plus className="mr-1 h-3.5 w-3.5" />
+                  Agregar paso
+                </Button>
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                {form.steps.map((step, idx) => (
+                  <StepEditor
+                    key={step.id}
+                    step={step}
+                    idx={idx}
+                    total={form.steps.length}
+                    baseProducts={baseProducts}
+                    onUpdateStep={updateStep}
+                    onToggleProduct={toggleStepProduct}
+                    onRemove={() => removeStep(idx)}
+                    onMove={(dir) => moveStep(idx, dir)}
+                  />
+                ))}
+              </div>
+
+              {form.steps.length === 0 && (
+                <p className="py-4 text-center text-sm text-gray-400">
+                  Agregá al menos un paso para el combo.
+                </p>
+              )}
+            </div>
+
+            {/* Options row */}
+            <div className="flex flex-wrap items-center gap-4">
+              <label className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 dark:border-gray-700">
+                <input
+                  type="checkbox"
+                  checked={form.paused}
+                  onChange={(e) => updateField('paused', e.target.checked)}
+                  className="h-4 w-4 rounded"
+                />
+                <span className="text-sm">Pausado</span>
+              </label>
+            </div>
+
+            {/* Save / Cancel */}
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={cancelEdit}>
+                Cancelar
+              </Button>
+              <Button
+                disabled={
+                  saving ||
+                  !form.name.trim() ||
+                  form.steps.every((s) => s.productIds.length === 0)
+                }
+                onClick={handleSave}
               >
-                {opt.label}
-              </button>
-            ))}
+                {saving
+                  ? 'Guardando...'
+                  : editing === 'new'
+                    ? 'Crear combo'
+                    : 'Guardar cambios'}
+              </Button>
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label>
-              {form.priceType === 'fixed' ? 'Precio ($)' : 'Descuento (%)'}
-            </Label>
-            <Input
-              type="number"
-              min="0"
-              step={form.priceType === 'fixed' ? '100' : '1'}
-              value={form.priceValue}
-              onChange={(e) => updateField('priceValue', e.target.value)}
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {form.priceType === 'fixed'
-                ? 'El cliente paga este monto fijo (los extras de cada paso suman aparte).'
-                : 'Se descuenta este porcentaje sobre la suma individual de los pasos.'}
-            </p>
+
+          {/* ── Right column: Sticky preview (desktop) ── */}
+          <div className="hidden xl:block">
+            <div className="sticky top-4 space-y-4">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                <Eye className="h-4 w-4" />
+                Vista previa del cliente
+              </div>
+
+              {canPreview ? (
+                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                  <ComboWizard
+                    key={JSON.stringify(form)}
+                    combo={buildComboFromForm(form)}
+                    onAdd={() => {}}
+                  />
+                </div>
+              ) : (
+                <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-300 text-sm text-gray-400 dark:border-gray-700">
+                  Completá nombre y al menos un paso
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Steps */}
-        <div className="space-y-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-              Pasos del combo
-            </h2>
-            <Button variant="outline" size="sm" onClick={addStep}>
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              Agregar paso
+        {/* Mobile preview button (below xl) */}
+        <div className="xl:hidden">
+          {canPreview && (
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => setShowPreview(true)}
+            >
+              <Eye className="mr-1 h-4 w-4" />
+              Vista previa del cliente
             </Button>
-          </div>
-
-          {form.steps.map((step, idx) => (
-            <StepEditor
-              key={step.id}
-              step={step}
-              idx={idx}
-              total={form.steps.length}
-              baseProducts={baseProducts}
-              onUpdateStep={updateStep}
-              onToggleProduct={toggleStepProduct}
-              onRemove={() => removeStep(idx)}
-              onMove={(dir) => moveStep(idx, dir)}
-            />
-          ))}
-
-          {form.steps.length === 0 && (
-            <p className="py-4 text-center text-sm text-gray-400">
-              Agregá al menos un paso para el combo.
-            </p>
           )}
         </div>
 
-        {/* Paused toggle */}
-        <label className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-700">
-          <input
-            type="checkbox"
-            checked={form.paused}
-            onChange={(e) => updateField('paused', e.target.checked)}
-            className="h-4 w-4 rounded"
-          />
-          <span className="text-sm">
-            Pausado (no visible en el catálogo)
-          </span>
-        </label>
-
-        {/* Preview button */}
-        {form.name.trim() && form.steps.some((s) => s.productIds.length > 0) && (
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => setShowPreview(true)}
-          >
-            <Eye className="mr-1 h-4 w-4" />
-            Vista previa del cliente
-          </Button>
-        )}
-
-        {/* Preview dialog */}
+        {/* Preview dialog (mobile) */}
         <Dialog open={showPreview} onOpenChange={(v) => !v && setShowPreview(false)}>
           <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
             <DialogHeader>
@@ -402,35 +460,13 @@ export default function AdminCombosPage() {
             )}
           </DialogContent>
         </Dialog>
-
-        {/* Save / Cancel */}
-        <div className="flex gap-3">
-          <Button variant="outline" className="flex-1" onClick={cancelEdit}>
-            Cancelar
-          </Button>
-          <Button
-            className="flex-1"
-            disabled={
-              saving ||
-              !form.name.trim() ||
-              form.steps.every((s) => s.productIds.length === 0)
-            }
-            onClick={handleSave}
-          >
-            {saving
-              ? 'Guardando...'
-              : editing === 'new'
-                ? 'Crear combo'
-                : 'Guardar cambios'}
-          </Button>
-        </div>
       </div>
     )
   }
 
   // ── List view ─────────────────────────────────────
   return (
-    <div className="mx-auto max-w-2xl space-y-6 p-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Combos</h1>
         <Button onClick={startCreate}>
@@ -444,67 +480,97 @@ export default function AdminCombosPage() {
           No hay combos creados todavía.
         </p>
       ) : (
-        <div className="space-y-2">
-          {combos.map((combo) => (
-            <div
-              key={combo.id}
-              className={`flex items-center gap-3 rounded-lg border p-3 transition-colors ${
-                combo.paused
-                  ? 'border-gray-200 bg-gray-50 opacity-60 dark:border-gray-700 dark:bg-gray-800/50'
-                  : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
-              }`}
-            >
-              {/* Icon */}
-              <span className="text-2xl">{combo.image}</span>
-
-              {/* Info */}
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{combo.name}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {combo.comboPrice.type === 'fixed'
-                    ? `Fijo ${formatPrice(combo.comboPrice.value)}`
-                    : `${combo.comboPrice.value}% dto.`}
-                  {' · '}
-                  {combo.steps.length} paso{combo.steps.length !== 1 && 's'}
-                </p>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => handleToggle(combo.id)}
-                  title={combo.paused ? 'Activar' : 'Pausar'}
+        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase tracking-wider text-gray-500 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-400">
+              <tr>
+                <th className="px-4 py-2.5" />
+                <th className="px-4 py-2.5">Nombre</th>
+                <th className="px-4 py-2.5">Precio</th>
+                <th className="px-4 py-2.5 text-center">Pasos</th>
+                <th className="px-4 py-2.5 text-center">Estado</th>
+                <th className="px-4 py-2.5 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {combos.map((combo) => (
+                <tr
+                  key={combo.id}
+                  className={`transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 ${
+                    combo.paused ? 'opacity-50' : ''
+                  }`}
                 >
-                  {combo.paused ? (
-                    <Play className="h-4 w-4" />
-                  ) : (
-                    <Pause className="h-4 w-4" />
-                  )}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => startEdit(combo)}
-                  title="Editar"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-red-500 hover:text-red-600"
-                  onClick={() => setDeleteTarget(combo)}
-                  title="Eliminar"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
+                  <td className="px-4 py-2.5 text-lg">{combo.image}</td>
+                  <td className="px-4 py-2.5">
+                    <div className="font-medium">{combo.name}</div>
+                    {combo.description && (
+                      <div className="mt-0.5 max-w-md truncate text-xs text-gray-500 dark:text-gray-400">
+                        {combo.description}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-4 py-2.5 whitespace-nowrap">
+                    {combo.comboPrice.type === 'fixed' ? (
+                      <span>{formatPrice(combo.comboPrice.value)}</span>
+                    ) : (
+                      <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                        {combo.comboPrice.value}% dto.
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2.5 text-center">
+                    <span className="font-mono">
+                      {combo.steps.length}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5 text-center">
+                    {combo.paused ? (
+                      <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                        Pausado
+                      </span>
+                    ) : (
+                      <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                        Activo
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2.5 text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleToggle(combo.id)}
+                        title={combo.paused ? 'Activar' : 'Pausar'}
+                      >
+                        {combo.paused ? (
+                          <Play className="h-3.5 w-3.5" />
+                        ) : (
+                          <Pause className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => startEdit(combo)}
+                        title="Editar"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-600"
+                        onClick={() => setDeleteTarget(combo)}
+                        title="Eliminar"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

@@ -1,6 +1,15 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.17.2] - 2026-03-17
+
+### Mejorado — Layout desktop-first para AdminCombosPage
+
+- **Lista**: reemplazadas las tarjetas por tabla a ancho completo con columnas de nombre, precio, pasos, estado y acciones (consistente con AdminProductosPage y AdminListasPage)
+- **Formulario**: layout de 2 columnas en `xl` — formulario a la izquierda, preview sticky del `ComboWizard` a la derecha; campos de nombre/descripción y precio/tipo en grids de 2 columnas; pasos en grid `lg:grid-cols-2`
+- **Preview adaptativo**: en desktop se muestra inline al costado del formulario; en mobile se mantiene el dialog con botón "Vista previa del cliente"
+- Removido `max-w-2xl` que restringía el ancho artificialmente
+
 ## [0.17.1] - 2026-03-17
 
 ### Mejorado — Vista previa de combo en admin
