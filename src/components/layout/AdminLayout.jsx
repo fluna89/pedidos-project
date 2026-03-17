@@ -4,6 +4,7 @@ import { useTheme } from '@/hooks/useTheme'
 import { Button } from '@/components/ui/button'
 import {
   ClipboardList,
+  Gift,
   IceCreamCone,
   List,
   LogOut,
@@ -16,6 +17,7 @@ import { cn } from '@/lib/utils'
 const navItems = [
   { to: '/admin/pedidos', label: 'Pedidos', icon: ClipboardList },
   { to: '/admin/productos', label: 'Productos', icon: Package },
+  { to: '/admin/combos', label: 'Combos', icon: Gift },
   { to: '/admin/listas', label: 'Listas de opciones', icon: List },
 ]
 

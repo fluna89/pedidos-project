@@ -391,7 +391,7 @@ function ProductForm({ product, categories, onSave, onCancel }) {
                 className="flex h-9 w-full rounded-md border border-gray-200 bg-white px-3 py-1 text-sm shadow-xs dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
               >
                 <option value="">Seleccionar...</option>
-                {categories.map((c) => (
+                {categories.filter((c) => c.id !== 'combos').map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.icon} {c.name}
                   </option>
@@ -1093,7 +1093,7 @@ export default function AdminProductosPage() {
         adminGetAllProducts(),
         adminGetCategories(),
       ])
-      setProducts(prods)
+      setProducts(prods.filter((p) => !p.isCombo))
       setCategories(cats)
     } finally {
       setLoading(false)
@@ -1210,7 +1210,7 @@ export default function AdminProductosPage() {
           className="h-9 rounded-md border border-gray-200 bg-white px-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
         >
           <option value="">Todas las categorías</option>
-          {categories.map((c) => (
+          {categories.filter((c) => c.id !== 'combos').map((c) => (
             <option key={c.id} value={c.id}>
               {c.icon} {c.name}
             </option>

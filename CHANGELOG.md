@@ -1,6 +1,17 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.17.0] - 2026-03-17
+
+### Nuevo — Panel de administración de combos
+
+- **AdminCombosPage**: nueva página dedicada para crear, editar, pausar y eliminar combos
+- **Formulario completo**: nombre, descripción, tipo de precio (fijo / descuento %), pasos con etiqueta, productos elegibles (multi-select) y cantidad fija opcional
+- **Reordenar pasos**: botones arriba/abajo para cambiar el orden de los pasos del combo
+- **Navegación admin**: nuevo ítem "Combos" (icono 🎁) en el sidebar, ruta `/admin/combos`
+- **Separación de concerns**: los combos ya no aparecen en AdminProductosPage ni en su selector de categorías
+- **`adminGetBaseProducts()`**: nuevo handler que devuelve productos no-combo para el picker de pasos
+
 ## [0.16.1] - 2026-03-16
 
 ### Corregido — Mejoras al wizard de combos

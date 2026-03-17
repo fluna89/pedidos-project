@@ -23,6 +23,7 @@ import OrderConfirmationPage from '@/pages/OrderConfirmationPage'
 import UserPanelPage from '@/pages/UserPanelPage'
 import AdminPedidosPage from '@/pages/admin/AdminPedidosPage'
 import AdminProductosPage from '@/pages/admin/AdminProductosPage'
+import AdminCombosPage from '@/pages/admin/AdminCombosPage'
 import AdminListasPage from '@/pages/admin/AdminListasPage'
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
                   <Route index element={<Navigate to="/admin/pedidos" replace />} />
                   <Route path="pedidos" element={<AdminPedidosPage />} />
                   <Route path="productos" element={<AdminProductosPage />} />
+                  <Route path="combos" element={<AdminCombosPage />} />
                   <Route path="listas" element={<AdminListasPage />} />
                 </Route>
               </Routes>
