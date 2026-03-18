@@ -589,6 +589,9 @@ export default function AdminListasPage() {
               <p className="text-center text-xs text-gray-500 dark:text-gray-400">
                 Quitá esta lista de los productos antes de poder eliminarla.
               </p>
+              <p className="text-center text-xs text-gray-500 dark:text-gray-400">
+                ¿Cómo solucionarlo? Editá cada producto y cambiá su lista de sabores por otra.
+              </p>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDeleteTarget(null)} className="w-full sm:w-auto">
                   Entendido
