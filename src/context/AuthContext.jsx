@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import { AuthContext } from '@/context/auth-context'
+import { mockUsers } from '@/mocks/data'
 
 // Mock: simula autenticación. Reemplazar con llamadas reales al backend.
-const MOCK_USERS = [
-  { id: 1, name: 'Juan Pérez', email: 'juan@test.com', password: '1234', role: 'customer' },
-  { id: 2, name: 'Admin Ainara', email: 'admin@ainara.com', password: 'admin', role: 'admin' },
-]
+const MOCK_USERS = mockUsers
 
 function generateToken() {
   return 'mock-token-' + Date.now()

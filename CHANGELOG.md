@@ -1,6 +1,26 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.19.0] - 2026-03-18
+
+### Nuevo — Cargar pedido (mostrador / WhatsApp)
+
+- **Nueva página admin** "Cargar pedido" (`/admin/cargar-pedido`): permite al operador crear pedidos para clientes de mostrador o WhatsApp
+- **Búsqueda de cliente**: busca usuarios registrados por nombre o email con debounce; al vincular un usuario, acumula puntos de fidelidad
+- **Tipo de pedido**: toggle retiro en local / delivery con formulario de dirección y costo de envío manual
+- **Catálogo completo**: muestra todos los productos (incluyendo `counterOnly`), colapsable por categoría, con badge de cantidad en carrito
+- **Selector de producto**: dialog con formato, sabores, extras, comentario y cantidad — misma lógica que el catálogo público
+- **Combos**: reutiliza `ComboWizard` dentro de un dialog para la selección paso a paso
+- **Cupón de descuento**: el operador puede aplicar cupones con validación
+- **Medio de pago**: selector con todos los métodos disponibles
+- **Resumen lateral**: sticky sidebar con items editables (cantidad ±, eliminar), subtotal, envío, descuento y total
+- **Validaciones inline**: mensajes de ayuda cuando falta cliente, dirección o medio de pago
+- **Estado de pago**: efectivo = `pagado` inmediato; otros métodos = `pendiente_pago`
+- **Puntos**: se acreditan automáticamente si el usuario está vinculado y el pago es inmediato
+- Nuevos handlers: `adminSearchUsers()`, `getCounterMenu()`, `adminCreateOrder()`
+- Mock users movidos a `data.js` para compartir entre AuthContext y handlers
+- Link "Cargar pedido" agregado al sidebar del admin con ícono PlusCircle
+
 ## [0.18.1] - 2026-03-18
 
 ### Mejorado — Diálogos de eliminación con protección de uso

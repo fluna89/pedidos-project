@@ -25,6 +25,7 @@ import AdminPedidosPage from '@/pages/admin/AdminPedidosPage'
 import AdminProductosPage from '@/pages/admin/AdminProductosPage'
 import AdminCombosPage from '@/pages/admin/AdminCombosPage'
 import AdminListasPage from '@/pages/admin/AdminListasPage'
+import AdminCargarPedidoPage from '@/pages/admin/AdminCargarPedidoPage'
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
                   <Route path="productos" element={<AdminProductosPage />} />
                   <Route path="combos" element={<AdminCombosPage />} />
                   <Route path="listas" element={<AdminListasPage />} />
+                  <Route path="cargar-pedido" element={<AdminCargarPedidoPage />} />
                 </Route>
               </Routes>
             </BrowserRouter>

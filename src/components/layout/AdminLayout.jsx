@@ -10,6 +10,7 @@ import {
   LogOut,
   Moon,
   Package,
+  PlusCircle,
   Sun,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -19,6 +20,7 @@ const navItems = [
   { to: '/admin/productos', label: 'Productos', icon: Package },
   { to: '/admin/combos', label: 'Combos', icon: Gift },
   { to: '/admin/listas', label: 'Listas de opciones', icon: List },
+  { to: '/admin/cargar-pedido', label: 'Cargar pedido', icon: PlusCircle },
 ]
 
 function SidebarLink({ to, label, icon: Icon }) { // eslint-disable-line no-unused-vars

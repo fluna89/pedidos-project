@@ -15,6 +15,7 @@ import {
   mockCoupons,
   mockPaymentMethods,
   mockOrders,
+  mockUsers,
   orderStatusLabels,
 } from './data'
 
@@ -585,6 +586,29 @@ export async function validateCoupon(code, subtotal = 0) {
   }
 }
 
+// ── Admin: User Search ────────────────────────────────
+
+/** Search registered users by name or email (admin). */
+export async function adminSearchUsers(query) {
+  await delay()
+  if (!query || query.trim().length < 2) return []
+  const q = query.toLowerCase()
+  return mockUsers
+    .filter((u) => u.role !== 'admin')
+    .filter((u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q))
+    .map((u) => ({ id: u.id, name: u.name, email: u.email }))
+}
+
+// ── Admin: Counter Menu ───────────────────────────────
+
+/** Get all products for counter order (includes counterOnly, excludes paused and comboOnly). */
+export async function getCounterMenu() {
+  await delay()
+  return products
+    .filter((p) => !p.paused && !p.comboOnly)
+    .map((p) => ({ ...p }))
+}
+
 // ── Admin Handlers ────────────────────────────────────
 
 const adminOrderFlow = [
@@ -793,4 +817,94 @@ export async function adminToggleProduct(id) {
 export async function adminGetBaseProducts() {
   await delay()
   return products.filter((p) => !p.isCombo).map((p) => ({ id: p.id, name: p.name, category: p.category, paused: p.paused, comboOnly: p.comboOnly }))
+}
+
+// ── Admin: Counter Order Creation ─────────────────────
+
+/** Create an order from the admin counter (mostrador/WhatsApp). */
+export async function adminCreateOrder(orderData) {
+  await delay(500)
+
+  const method = mockPaymentMethods.find((m) => m.id === orderData.paymentMethodId)
+
+  // Normalize cart items to the flat format
+  const normalizedItems = (orderData.items || []).map((item) => {
+    let flavors = ''
+    if (item.comboSteps) {
+      flavors = item.comboSteps
+        .map((cs) => {
+          const parts = [cs.productName]
+          if (cs.format) parts[0] += ` (${cs.format.name})`
+          if (cs.flavors?.length > 0)
+            parts.push(cs.flavors.map((f) => (f.quantity > 1 ? `${f.quantity} ${f.name}` : f.name)).join(', '))
+          if (cs.extras?.length > 0)
+            parts.push('+ ' + cs.extras.map((e) => e.name).join(', '))
+          return `${cs.label}: ${parts.join(' — ')}`
+        })
+        .join(' | ')
+    } else if (Array.isArray(item.flavors)) {
+      flavors = item.flavors
+        .map((f) => {
+          if (typeof f === 'object') return f.quantity ? `${f.quantity} ${f.name}` : f.name
+          return f
+        })
+        .join(', ')
+    } else {
+      flavors = item.flavors || ''
+    }
+
+    return {
+      name: item.name,
+      format: typeof item.format === 'object' ? item.format.name : item.format,
+      flavors,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+    }
+  })
+
+  // For counter orders: cash = pagado immediately, everything else = pendiente_pago
+  const paymentStatus = method?.type === 'cash' ? 'pagado' : 'pendiente_pago'
+
+  const order = {
+    id: Date.now(),
+    ...orderData,
+    items: normalizedItems,
+    isCounter: true,
+    status: 'pendiente',
+    paymentMethod: method?.name ?? 'Desconocido',
+    paymentMethodId: orderData.paymentMethodId,
+    paymentStatus,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+
+  orders.push(order)
+
+  // If paid immediately (cash), start status progression
+  if (paymentStatus === 'pagado') {
+    simulateStatusProgression(order)
+  }
+
+  // If linked to a registered user and payment is confirmed, earn points
+  if (orderData.userId && typeof orderData.userId === 'number' && paymentStatus === 'pagado') {
+    const netSubtotal = Math.max(0, (orderData.subtotal || 0) - (orderData.couponDiscount || 0))
+    if (netSubtotal > 0) {
+      const points = Math.floor(netSubtotal)
+      const now = new Date()
+      const expiresAt = new Date(now)
+      expiresAt.setMonth(expiresAt.getMonth() + 3)
+      pointsHistory.push({
+        id: 'pts-' + Date.now(),
+        userId: orderData.userId,
+        type: 'earn',
+        points,
+        description: `Pedido #${order.id} (mostrador)`,
+        date: now.toISOString(),
+        expiresAt: expiresAt.toISOString(),
+      })
+      order.pointsEarned = points
+    }
+  }
+
+  return { ...order }
 }

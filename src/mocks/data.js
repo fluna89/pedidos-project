@@ -1,6 +1,13 @@
 // Mock data - simulates backend responses
 // Replace with real API calls when backend is ready
 
+// ── Usuarios mock ──────────────────────────────────────
+
+export const mockUsers = [
+  { id: 1, name: 'Juan Pérez', email: 'juan@test.com', password: '1234', role: 'customer' },
+  { id: 2, name: 'Admin Ainara', email: 'admin@ainara.com', password: 'admin', role: 'admin' },
+]
+
 // ── Sabores disponibles ────────────────────────────────
 
 export const mockFlavors = [
