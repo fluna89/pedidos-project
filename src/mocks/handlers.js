@@ -764,6 +764,14 @@ export async function adminUpdateProduct(id, data) {
 }
 
 /** Delete a product (admin). */
+export async function adminGetProductUsage(id) {
+  await delay()
+  const combos = products.filter(
+    (p) => p.isCombo && p.steps?.some((s) => s.productIds.includes(id)),
+  )
+  return combos.map((c) => ({ id: c.id, name: c.name }))
+}
+
 export async function adminDeleteProduct(id) {
   await delay()
   const idx = products.findIndex((p) => p.id === id)

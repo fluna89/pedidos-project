@@ -3,11 +3,12 @@
 Registro de funcionalidades implementadas y planificadas.
 ## [0.18.1] - 2026-03-18
 
-### Mejorado — Eliminar listas de sabores: botón siempre habilitado con alerta de uso
+### Mejorado — Diálogos de eliminación con protección de uso
 
-- El botón eliminar en listas de sabores ya no se deshabilita — siempre está clickeable
-- Si la lista está en uso por productos, se muestra un diálogo explicando que no se puede eliminar y listando los productos que la referencian
-- Si la lista no está en uso, se muestra la confirmación normal de eliminación
+- **Listas de sabores**: botón eliminar siempre habilitado; si la lista está en uso por productos, muestra diálogo con los productos que la referencian y un tip de cómo solucionarlo
+- **Productos**: al intentar eliminar un producto usado en combos, muestra diálogo con los combos que lo referencian y un tip de cómo solucionarlo
+- Nuevo handler `adminGetProductUsage()` que detecta qué combos referencian un producto
+- Estilo consistente entre ambos diálogos: ícono centrado, panel amber con items, card de ayuda con 💡
 
 ## [0.18.0] - 2026-03-17
 

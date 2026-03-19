@@ -10,6 +10,7 @@ import {
   adminAddFlavor,
   adminDeleteFlavor,
   adminGetFlavorSources,
+  adminGetProductUsage,
 } from '@/mocks/handlers'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,6 +38,7 @@ import {
   MessageSquare,
   Pause,
   Play,
+  AlertCircle,
 } from 'lucide-react'
 import ProductDetailView from '@/components/catalog/ProductDetailView'
 
@@ -1113,6 +1115,7 @@ export default function AdminProductosPage() {
   const [view, setView] = useState('list') // 'list' | 'form'
   const [editingProduct, setEditingProduct] = useState(null) // null = new
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deleteUsedBy, setDeleteUsedBy] = useState([])
   const [filter, setFilter] = useState('') // text search
   const [categoryFilter, setCategoryFilter] = useState('')
   const [expandedRows, setExpandedRows] = useState(new Set())
@@ -1398,7 +1401,11 @@ export default function AdminProductosPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setDeleteTarget(p)}
+                        onClick={async () => {
+                          const usage = await adminGetProductUsage(p.id)
+                          setDeleteUsedBy(usage)
+                          setDeleteTarget(p)
+                        }}
                         title="Eliminar"
                         className="text-red-500 hover:text-red-700"
                       >
@@ -1429,22 +1436,61 @@ export default function AdminProductosPage() {
         onOpenChange={(open) => !open && setDeleteTarget(null)}
       >
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Eliminar producto</DialogTitle>
-            <DialogDescription>
-              ¿Estás seguro de que querés eliminar{' '}
-              <strong>{deleteTarget?.name}</strong>? Esta acción no se puede
-              deshacer.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-              Cancelar
-            </Button>
-            <Button variant="destructive" onClick={handleConfirmDelete}>
-              Eliminar
-            </Button>
-          </DialogFooter>
+          {deleteUsedBy.length > 0 ? (
+            <>
+              <DialogHeader>
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
+                  <AlertCircle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <DialogTitle className="text-center">Producto en uso</DialogTitle>
+                <DialogDescription className="text-center">
+                  <strong>{deleteTarget?.name}</strong> no se puede eliminar porque está siendo usado en:
+                </DialogDescription>
+              </DialogHeader>
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-950/30">
+                <ul className="space-y-1">
+                  {deleteUsedBy.map((c) => (
+                    <li key={c.id} className="flex items-center gap-2 text-sm text-amber-800 dark:text-amber-200">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                      {c.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex items-start gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50">
+                <span className="mt-0.5 text-sm">💡</span>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Para eliminar este producto primero quitalo de los combos que lo usan.
+                </p>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setDeleteTarget(null)} className="w-full sm:w-auto">
+                  Entendido
+                </Button>
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                  <Trash2 className="h-6 w-6 text-red-600 dark:text-red-400" />
+                </div>
+                <DialogTitle className="text-center">Eliminar producto</DialogTitle>
+                <DialogDescription className="text-center">
+                  ¿Estás seguro de que querés eliminar{' '}
+                  <strong>{deleteTarget?.name}</strong>? Esta acción no se puede deshacer.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+                  Cancelar
+                </Button>
+                <Button variant="destructive" onClick={handleConfirmDelete}>
+                  Eliminar
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>
