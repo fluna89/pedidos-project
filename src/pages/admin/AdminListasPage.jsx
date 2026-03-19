@@ -588,8 +588,8 @@ export default function AdminListasPage() {
               </div>
               <div className="flex items-start gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50">
                 <span className="mt-0.5 text-sm">💡</span>
-                <p className="text-xs text-gray-600 dark:text-gray-300">
-                  Editá cada producto y cambiá su lista de sabores por otra.
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Para eliminar la lista de sabores primero editá cada producto y cambiá su lista de sabores por otra.
                 </p>
               </div>
               <DialogFooter>
