@@ -5,7 +5,7 @@ Registro de funcionalidades implementadas y planificadas.
 
 ### Mejorado — Ajustes UI admin pedidos
 
-- **Kanban sin botones de acción**: eliminados los botones avanzar/retroceder/cancelar de las tarjetas kanban; el cambio de estado se hace exclusivamente con drag & drop
+- **Kanban sin botones avanzar/retroceder**: eliminados de las tarjetas kanban; el cambio de estado se hace con drag & drop. El botón de cancelar permanece
 - **Cursor pointer en botones**: agregado `cursor-pointer` al componente `Button` base para que todos los botones muestren el cursor correcto al pasar el mouse
 - **Toggle Lista/Kanban más claro**: cambiado de variante `secondary` a `default` para el botón activo, generando mayor contraste visual entre activo e inactivo
 

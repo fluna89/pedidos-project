@@ -111,7 +111,7 @@ function formatDate(isoString) {
 
 const KANBAN_MAX_VISIBLE = 4
 
-function KanbanColumn({ title, orders, newOrderIds, droppableId }) {
+function KanbanColumn({ title, orders, onCancel, newOrderIds, droppableId }) {
   const [expanded, setExpanded] = useState(false)
   const visibleOrders = expanded ? orders : orders.slice(0, KANBAN_MAX_VISIBLE)
   const hasMore = orders.length > KANBAN_MAX_VISIBLE
@@ -165,7 +165,19 @@ function KanbanColumn({ title, orders, newOrderIds, droppableId }) {
               <span className="text-[10px] text-gray-500">{formatDate(order.createdAt)}</span>
               <span className="text-xs font-semibold">${order.total?.toLocaleString('es-AR')}</span>
             </div>
-
+            {order.status !== 'entregado' && order.status !== 'cancelado' && (
+              <div className="mt-1 flex justify-end">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-red-500 hover:text-red-600"
+                  onClick={() => onCancel(order.id)}
+                  title="Cancelar pedido"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
                   </div>
                 )}
               </Draggable>
@@ -618,6 +630,7 @@ export default function AdminPedidosPage() {
                       ? orders.filter((o) => o.status === 'confirmado' || o.status === 'en_preparacion')
                       : orders.filter((o) => o.status === status)
                   }
+                  onCancel={handleCancel}
                   newOrderIds={newOrderIds}
                 />
               ))}
