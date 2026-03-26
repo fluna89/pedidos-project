@@ -1,28 +1,22 @@
-# 🍔 Pedidos Project
+# Ainara Helados — Frontend
 
-Front-end de un sistema de pedidos de comida para **delivery** y **retiro en local**.
+Front-end para el sistema de pedidos de Ainara Helados. React 19 + Vite 7 + Tailwind v4.
 
-## Tech Stack
-
-- **React 19** + **Vite 7** — Build rápido y dev experience moderna
-- **ESLint + Prettier** — Calidad y consistencia de código
-- **fnm** — Gestión de versión de Node.js por proyecto
+> **Documentación completa**: [pedidos-docs](https://github.com/fluna89/pedidos-docs)
 
 ## Quick Start
 
 ```bash
-# Instalar versión correcta de Node (requiere fnm)
-fnm install
-fnm use
-
-# Instalar dependencias
+fnm install && fnm use   # Node.js version from .node-version
 npm install
-
-# Iniciar servidor de desarrollo
 npm run dev
 ```
 
-## Documentación
+## Documentation
+
+- [Setup guide](https://github.com/fluna89/pedidos-docs/blob/master/setup/frontend.md)
+- [Architecture](https://github.com/fluna89/pedidos-docs/blob/master/architecture/frontend.md)
+- [Changelog](https://github.com/fluna89/pedidos-docs/blob/master/changelog/frontend.md)
 
 - [SETUP.md](./SETUP.md) — Guía completa de configuración del entorno
 - [CHANGELOG.md](./CHANGELOG.md) — Funcionalidades implementadas y roadmap
