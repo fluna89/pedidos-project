@@ -1,6 +1,12 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.21.2] - 2026-03-26
+
+### Corregido — Cursor en botón cerrar de dialogs
+
+- Agregado `cursor-pointer` al botón de cerrar (X) del componente `Dialog` para que muestre cursor clickeable en desktop
+
 ## [0.21.1] - 2026-03-26
 
 ### Mejorado — Legibilidad de items en detalle de pedido
