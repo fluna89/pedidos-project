@@ -111,7 +111,7 @@ function formatDate(isoString) {
 
 const KANBAN_MAX_VISIBLE = 4
 
-function KanbanColumn({ title, orders, onAdvance, onRevert, onCancel, newOrderIds, droppableId }) {
+function KanbanColumn({ title, orders, newOrderIds, droppableId }) {
   const [expanded, setExpanded] = useState(false)
   const visibleOrders = expanded ? orders : orders.slice(0, KANBAN_MAX_VISIBLE)
   const hasMore = orders.length > KANBAN_MAX_VISIBLE
@@ -165,53 +165,7 @@ function KanbanColumn({ title, orders, onAdvance, onRevert, onCancel, newOrderId
               <span className="text-[10px] text-gray-500">{formatDate(order.createdAt)}</span>
               <span className="text-xs font-semibold">${order.total?.toLocaleString('es-AR')}</span>
             </div>
-            <div className="mt-1 flex items-center gap-0.5">
-              {order.status !== 'pendiente' &&
-                order.status !== 'cancelado' && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6"
-                    onClick={() => onRevert(order.id)}
-                    title="Retroceder estado"
-                  >
-                    <ChevronLeft className="h-3 w-3" />
-                  </Button>
-                )}
-              {order.status === 'entregado' && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-orange-500 hover:text-orange-600"
-                  onClick={() => onRevert(order.id)}
-                  title="Revertir entrega"
-                >
-                  <Undo2 className="h-3 w-3" />
-                </Button>
-              )}
-              {order.status !== 'entregado' && order.status !== 'cancelado' && (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6"
-                    onClick={() => onAdvance(order.id)}
-                    title="Avanzar estado"
-                  >
-                    <ChevronRight className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 text-red-500 hover:text-red-600"
-                    onClick={() => onCancel(order.id)}
-                    title="Cancelar pedido"
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </>
-              )}
-            </div>
+
                   </div>
                 )}
               </Draggable>
@@ -628,7 +582,7 @@ export default function AdminPedidosPage() {
           </Button>
           <div className="flex rounded-lg border border-gray-200 dark:border-gray-700">
             <Button
-              variant={view === 'list' ? 'secondary' : 'ghost'}
+              variant={view === 'list' ? 'default' : 'ghost'}
               size="sm"
               className="rounded-r-none"
               onClick={() => { setView('list'); localStorage.setItem('admin_orders_view', 'list') }}
@@ -637,7 +591,7 @@ export default function AdminPedidosPage() {
               Lista
             </Button>
             <Button
-              variant={view === 'kanban' ? 'secondary' : 'ghost'}
+              variant={view === 'kanban' ? 'default' : 'ghost'}
               size="sm"
               className="rounded-l-none"
               onClick={() => { setView('kanban'); localStorage.setItem('admin_orders_view', 'kanban') }}
@@ -664,9 +618,6 @@ export default function AdminPedidosPage() {
                       ? orders.filter((o) => o.status === 'confirmado' || o.status === 'en_preparacion')
                       : orders.filter((o) => o.status === status)
                   }
-                  onAdvance={handleAdvance}
-                  onRevert={handleRevert}
-                  onCancel={handleCancel}
                   newOrderIds={newOrderIds}
                 />
               ))}

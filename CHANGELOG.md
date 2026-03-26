@@ -1,6 +1,14 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.20.3] - 2026-03-26
+
+### Mejorado — Ajustes UI admin pedidos
+
+- **Kanban sin botones de acción**: eliminados los botones avanzar/retroceder/cancelar de las tarjetas kanban; el cambio de estado se hace exclusivamente con drag & drop
+- **Cursor pointer en botones**: agregado `cursor-pointer` al componente `Button` base para que todos los botones muestren el cursor correcto al pasar el mouse
+- **Toggle Lista/Kanban más claro**: cambiado de variante `secondary` a `default` para el botón activo, generando mayor contraste visual entre activo e inactivo
+
 ## [0.20.2] - 2026-03-26
 
 ### Corregido — Bugs en vista kanban de admin
