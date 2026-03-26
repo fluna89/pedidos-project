@@ -307,8 +307,8 @@ function OrderDetailDialog({ order, open, onOpenChange }) {
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-semibold">
                       {item.quantity > 1 && (
-                        <span className="mr-1 inline-flex h-5 w-5 items-center justify-center rounded bg-gray-200 text-xs font-bold dark:bg-gray-700">
-                          {item.quantity}
+                        <span className="mr-1.5 inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-indigo-600 px-1 text-xs font-bold text-white">
+                          ×{item.quantity}
                         </span>
                       )}
                       {item.name}
