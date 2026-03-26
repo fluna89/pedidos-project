@@ -1,6 +1,13 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.20.2] - 2026-03-26
+
+### Corregido — Bugs en vista kanban de admin
+
+- **Persistencia de vista**: al refrescar la página de pedidos, la vista seleccionada (Lista/Kanban) se mantiene gracias a `localStorage`
+- **Drag & drop optimistic update**: corregido bug donde al arrastrar una tarjeta el cambio no se reflejaba visualmente hasta el próximo polling. Causa: `Number(draggableId)` generaba mismatch de tipo con IDs string del backend
+
 ## [0.20.1] - 2026-03-25
 
 ### Mejorado — Mapeo visual de estados de pedido

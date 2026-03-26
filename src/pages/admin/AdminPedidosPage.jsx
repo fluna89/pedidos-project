@@ -443,7 +443,7 @@ function CancelledSection({ orders, onRevert, onPreviewImage }) {
 export default function AdminPedidosPage() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
-  const [view, setView] = useState('list') // 'list' | 'kanban'
+  const [view, setView] = useState(() => localStorage.getItem('admin_orders_view') || 'list') // 'list' | 'kanban'
   const [muted, setMuted] = useState(false)
   const [newOrderIds, setNewOrderIds] = useState(new Set())
   const knownIdsRef = useRef(new Set())
@@ -566,14 +566,13 @@ export default function AdminPedidosPage() {
     const { draggableId, destination, source } = result
     if (!destination) return
     if (destination.droppableId === source.droppableId) return
-    const orderId = Number(draggableId)
     const newStatus = destination.droppableId
-    // Optimistic update
+    // Optimistic update — compare as strings to avoid type mismatch
     setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)),
+      prev.map((o) => (String(o.id) === draggableId ? { ...o, status: newStatus } : o)),
     )
     try {
-      await adminSetOrderStatus(orderId, newStatus)
+      await adminSetOrderStatus(draggableId, newStatus)
     } catch (err) {
       alert(err.message)
       // Rollback
@@ -632,7 +631,7 @@ export default function AdminPedidosPage() {
               variant={view === 'list' ? 'secondary' : 'ghost'}
               size="sm"
               className="rounded-r-none"
-              onClick={() => setView('list')}
+              onClick={() => { setView('list'); localStorage.setItem('admin_orders_view', 'list') }}
             >
               <LayoutList className="mr-1 h-4 w-4" />
               Lista
@@ -641,7 +640,7 @@ export default function AdminPedidosPage() {
               variant={view === 'kanban' ? 'secondary' : 'ghost'}
               size="sm"
               className="rounded-l-none"
-              onClick={() => setView('kanban')}
+              onClick={() => { setView('kanban'); localStorage.setItem('admin_orders_view', 'kanban') }}
             >
               <Columns3 className="mr-1 h-4 w-4" />
               Kanban
