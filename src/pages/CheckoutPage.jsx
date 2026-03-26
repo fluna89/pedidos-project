@@ -34,7 +34,7 @@ import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector'
 
 export default function CheckoutPage() {
   const { isAuthenticated, isGuest, user } = useAuth()
-  const { items, subtotal, clearCart } = useCart()
+  const { items, subtotal, clearCart, orderComment } = useCart()
   const { addresses, activeId, selectActive, activeAddress } = useAddresses()
   const { eligible: loyaltyEligible, earnAfterOrder, redeemPoints } = useLoyalty()
   const navigate = useNavigate()
@@ -133,6 +133,7 @@ export default function CheckoutPage() {
       // 2. Create the order
       const order = await createOrder({
         userId: user?.id,
+        customerName: user?.name || 'Invitado',
         items,
         orderType,
         subtotal,
@@ -141,6 +142,7 @@ export default function CheckoutPage() {
         coupon: appliedCoupon?.coupon?.code ?? null,
         couponDiscount,
         total,
+        comment: orderComment || undefined,
         address:
           orderType === 'delivery'
             ? isGuest

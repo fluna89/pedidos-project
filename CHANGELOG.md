@@ -1,6 +1,13 @@
 # Changelog - Pedidos Project
 
 Registro de funcionalidades implementadas y planificadas.
+## [0.22.0] - 2026-03-26
+
+### Nuevo — Comentarios de pedido al backend
+
+- **CheckoutPage**: envía `comment` (comentario general) y `customerName` en el payload de creación de pedido
+- Los comentarios por item ya se enviaban desde el carrito; ahora el backend los persiste y devuelve
+
 ## [0.21.2] - 2026-03-26
 
 ### Corregido — Cursor en botón cerrar de dialogs
