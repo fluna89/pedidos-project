@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useLoyalty } from '@/hooks/useLoyalty'
-import { MapPin, Star, UserCircle } from 'lucide-react'
+import { Star, UserCircle, UserPen } from 'lucide-react'
 
 /**
  * Thin contextual bar shown ONLY on mobile (< sm) for registered users.
@@ -40,7 +40,7 @@ export default function MobileUserBar() {
             to="/addresses"
             className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           >
-            <MapPin className="h-3 w-3" />
+            <UserPen className="h-3 w-3" />
             Mis datos
           </Link>
         </div>

@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useTheme } from '@/hooks/useTheme'
 import { useCart } from '@/hooks/useCart'
 import { Button } from '@/components/ui/button'
-import { CircleUserRound, IceCreamCone, LogOut, MapPin, Moon, ShoppingCart, Sun, UtensilsCrossed, UserCircle } from 'lucide-react'
+import { CircleUserRound, IceCreamCone, LogOut, Moon, ShoppingCart, Sun, UserPen, UtensilsCrossed, UserCircle } from 'lucide-react'
 import PointsBadge from '@/components/loyalty/PointsBadge'
 
 export default function Header() {
@@ -33,7 +33,7 @@ export default function Header() {
           {isAuthenticated && !isGuest && (
             <Link to="/addresses" className="hidden sm:block">
               <Button variant="ghost" size="sm">
-                <MapPin className="mr-1 h-4 w-4" />
+                <UserPen className="mr-1 h-4 w-4" />
                 Mis datos
               </Button>
             </Link>
