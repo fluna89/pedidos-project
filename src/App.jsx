@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import { useAuth } from '@/hooks/useAuth'
@@ -36,9 +37,11 @@ function SessionExpiredRedirect() {
   const { sessionExpired } = useAuth()
   const navigate = useNavigate()
 
-  if (sessionExpired) {
-    navigate('/login', { replace: true })
-  }
+  useEffect(() => {
+    if (sessionExpired) {
+      navigate('/login', { replace: true })
+    }
+  }, [sessionExpired, navigate])
 
   return null
 }
